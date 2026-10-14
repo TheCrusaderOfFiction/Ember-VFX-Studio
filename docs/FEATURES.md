@@ -126,7 +126,7 @@ Try this: Turn glow off for leaves, confetti, and opaque-looking debris.
 
 Appearance
 
-Enable Trail, then adjust Trail length from 0.1× to 10×. 1× preserves the original streak length, 3× triples it, and 10× makes a much longer streak. Each layer has its own length. Trail length can change over time using a property animation, and is saved in projects and presets. Preview streaks extend behind the particle along its current velocity; they do not record a curved movement history. Niagara export uses stretched velocity-aligned sprites with the same length multiplier, so the exact appearance can differ.
+Enable Trail, then adjust Trail length from 0.1× to 10×. 1× preserves the original streak length, 3× triples it, and 10× makes a much longer streak. Each layer has its own length. Trail length can change over time using a property animation, and is saved in projects and presets. Preview streaks extend behind the particle along its current velocity; they do not record a curved movement history. Niagara export draws a separate fading streak behind each particle using its current velocity and the same length multiplier. Re-export older Unreal effects to get this trail renderer.
 
 Try this: Try a laser or spark effect with Trail on and Trail length at 4×.
 
@@ -134,7 +134,7 @@ Try this: Try a laser or spark effect with Trail on and Trail length at 4×.
 
 Appearance
 
-Draws a short line behind moving particles in the preview. Unreal export uses stretched, velocity-aligned sprites rather than a full ribbon renderer.
+Draws a fading streak behind moving particles. Unreal export adds a separate velocity-aligned trail renderer and fading material, keeping the main particle shape intact. Use Trail length to extend it. Re-export older Unreal effects to get the corrected renderer.
 
 Try this: Increase movement speed to make trails easier to see.
 

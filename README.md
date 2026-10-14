@@ -1,4 +1,4 @@
-# Ember VFX Studio — current desktop release (1.11)
+# Ember VFX Studio — current desktop release (1.11.1)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
 
@@ -15,7 +15,7 @@ New, Open, Undo, and Redo are in the toolbar. Restart resets all layer simulatio
 
 ## Longer trails
 
-Enable **Trail**, then set **Trail length**. 1× is the original length; use 3× or 5× for longer streaks (range 0.1×–10×). Each layer has its own length. Use a Trail length animation key to change it over time. Projects, presets, and Niagara exports keep the multiplier. Preview trails follow current velocity rather than recording curved paths; Niagara represents them as stretched sprites.
+Enable **Trail**, then set **Trail length**. 1× is the original length; use 3× or 5× for longer streaks (range 0.1×–10×). Each layer has its own length. Use a Trail length animation key to change it over time. Projects, presets, and Niagara exports keep the multiplier. Preview trails follow current velocity rather than recording curved paths; Niagara uses a separate velocity-aligned trail renderer behind each particle, with a fading material. Re-export older effects to get the corrected trail renderer.
 
 ## Your own presets
 
@@ -29,7 +29,7 @@ Click **Documentation**, press **F1**, or use the **?** button beside a feature.
 
 Choose **Export effect → Send full effect to Unreal**, select 5.6 or 5.8, then select a .uproject. Close that Unreal project first. Ember installs its editor plugin, or backs up and updates an older Ember plugin in Saved/EmberPluginBackups. Existing effects are preserved using suffixes.
 
-The importer creates a Niagara system with an editable CPU sprite emitter for each visible layer, plus generated particle materials. It translates the current spawn shape, particle appearance, amount, size, color, speed, gravity, turbulence, floor bounce, and lifetime size/opacity controls. Hidden layers stay in the Ember project but are omitted from export. Trails use stretched velocity-aligned sprites. Bloom depends on the Unreal scene. Preview and engine results are approximate; random distributions and burst loop timing can differ.
+The importer creates a Niagara system with an editable CPU sprite emitter for each visible layer, plus generated particle materials. It translates the current spawn shape, particle appearance, amount, size, color, speed, gravity, turbulence, floor bounce, and lifetime size/opacity controls. Hidden layers stay in the Ember project but are omitted from export. Trails use separate velocity-aligned streak renderers behind the particles. Bloom depends on the Unreal scene. Preview and engine results are approximate; random distributions and burst loop timing can differ.
 
 For manual import, **Get editor plugin** opens the matching folder. Copy EmberNiagara to your project's Plugins folder, restart Unreal, then use **Tools → Import Ember VFX**. Neither path requires Python.
 

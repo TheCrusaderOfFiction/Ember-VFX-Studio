@@ -10,6 +10,7 @@
 #include "NiagaraSystemInstance.h"
 #include "NiagaraEmitterInstance.h"
 #include "NiagaraDataSetAccessor.h"
+#include "NiagaraSpriteRendererProperties.h"
 
 namespace {
 bool VerifyTimeline(const FString& Asset,bool Orbit=false,bool Stretch=false,bool Distance=false,bool TrailLength=false) {
@@ -37,7 +38,31 @@ bool VerifyTimeline(const FString& Asset,bool Orbit=false,bool Stretch=false,boo
         UE_LOG(LogTemp,Display,TEXT("EMBER_TIMELINE_SAMPLE %.2f %d"),Step*.25,Count);
         if(TrailLength){
             if(!Instance||Instance->GetEmitters().Num()!=3){Valid=false;continue;}
-            for(int32 EmitterIndex=0;EmitterIndex<3;EmitterIndex++){auto& Emitter=Instance->GetEmitters()[EmitterIndex].Get();const auto& Data=Emitter.GetParticleData();const auto Sizes=FNiagaraDataSetAccessor<FVector2f>(Data,TEXT("SpriteSize")).GetReader(Data);const int32 TrailCount=Emitter.GetNumParticles();if(TrailCount!=100||!Sizes.IsValid()){Valid=false;continue;}const float Expected=EmitterIndex==0?(Step<=3?2.0f:10.0f):EmitterIndex==1?1.0f:2.0f;for(int32 Index=0;Index<TrailCount;Index++){const auto Size=Sizes.Get(Index);if(!FMath::IsFinite(Size.X)||!FMath::IsFinite(Size.Y)||Size.X<=0||((Step<=3||Step>=6)&&FMath::Abs(Size.Y/Size.X-Expected)>.01f))Valid=false;}UE_LOG(LogTemp,Display,TEXT("EMBER_TRAIL_SAMPLE %d %.2f ratio %.3f"),EmitterIndex,Step*.25,Sizes.Get(0).Y/Sizes.Get(0).X);}
+            for(int32 EmitterIndex=0;EmitterIndex<3;EmitterIndex++){
+                auto& Emitter=Instance->GetEmitters()[EmitterIndex].Get();const auto& Data=Emitter.GetParticleData();
+                const auto Sizes=FNiagaraDataSetAccessor<FVector2f>(Data,TEXT("SpriteSize")).GetReader(Data);
+                const auto Positions=FNiagaraDataSetAccessor<FNiagaraPosition>(Data,TEXT("Position")).GetReader(Data);
+                const auto Velocities=FNiagaraDataSetAccessor<FVector3f>(Data,TEXT("Velocity")).GetReader(Data);
+                const int32 TrailCount=Emitter.GetNumParticles();if(TrailCount!=100||!Sizes.IsValid()||!Positions.IsValid()||!Velocities.IsValid()){Valid=false;continue;}
+                const auto* EmitterData=System->GetEmitterHandles()[EmitterIndex].GetEmitterData();
+                int32 Renderers=0;UNiagaraSpriteRendererProperties* TrailRenderer=nullptr;
+                for(auto* Renderer:EmitterData->GetRenderers())if(auto* Sprite=Cast<UNiagaraSpriteRendererProperties>(Renderer)){Renderers++;if(Sprite->PositionBinding.GetParamMapBindableVariable().GetName()==FName(TEXT("Particles.EmberTrailPosition")))TrailRenderer=Sprite;}
+                if(Renderers!=(EmitterIndex==1?1:2))Valid=false;
+                for(int32 Index=0;Index<TrailCount;Index++){const auto Size=Sizes.Get(Index);if(FMath::Abs(Size.X-6.0f)>.01f||FMath::Abs(Size.Y-6.0f)>.01f)Valid=false;}
+                if(EmitterIndex==1){if(TrailRenderer)Valid=false;continue;}
+                if(!TrailRenderer||!TrailRenderer->Material||TrailRenderer->Alignment!=ENiagaraSpriteAlignment::VelocityAligned||TrailRenderer->SpriteSizeBinding.GetParamMapBindableVariable().GetName()!=FName(TEXT("Particles.EmberTrailSize"))||TrailRenderer->ColorBinding.GetParamMapBindableVariable().GetName()!=FName(TEXT("Particles.EmberTrailColor"))){Valid=false;continue;}
+                const auto TailPositions=FNiagaraDataSetAccessor<FNiagaraPosition>(Data,TEXT("EmberTrailPosition")).GetReader(Data);
+                const auto TailSizes=FNiagaraDataSetAccessor<FVector2f>(Data,TEXT("EmberTrailSize")).GetReader(Data);
+                const auto TailColors=FNiagaraDataSetAccessor<FLinearColor>(Data,TEXT("EmberTrailColor")).GetReader(Data);
+                if(!TailPositions.IsValid()||!TailSizes.IsValid()||!TailColors.IsValid()){Valid=false;continue;}
+                const float LengthFactor=EmitterIndex==0&&Step>=6?5.0f:1.0f;
+                if(Step<=3||Step>=6)for(int32 Index=0;Index<TrailCount;Index++){
+                    const auto P=Positions.Get(Index),Tail=TailPositions.Get(Index);const auto V=Velocities.Get(Index);const auto Size=TailSizes.Get(Index);const auto Color=TailColors.Get(Index);
+                    const FVector3f Offset(P.X-Tail.X,P.Y-Tail.Y,P.Z-Tail.Z),Expected=V*(.15f*LengthFactor*.5f);
+                    if((Offset-Expected).Size()>.01f||FMath::Abs(Size.X-1.05f)>.01f||FMath::Abs(Size.Y-V.Size()*.15f*LengthFactor)>.01f||!FMath::IsFinite(Color.A)||Color.A<=0)Valid=false;
+                }
+                UE_LOG(LogTemp,Display,TEXT("EMBER_TRAIL_RENDERER_SAMPLE %d %.2f length %.3f"),EmitterIndex,Step*.25,TailSizes.Get(0).Y);
+            }
         }else if(Orbit){
             if(Count!=100){Valid=false;continue;}
             const auto& Data=Instance->GetEmitters()[0]->GetParticleData();
