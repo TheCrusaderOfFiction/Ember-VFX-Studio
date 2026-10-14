@@ -15,3 +15,5 @@ input[type="number"]{width:100%;box-sizing:border-box;background:#22232b;border:
 .save-preset{width:100%;margin-bottom:12px;color:#d1bfff;font-size:11px}.tabs{flex-wrap:wrap}.saved-preset-actions{display:flex}.saved-preset-actions .preset-add{flex:1}.delete-preset{border:0;border-top:1px solid #303137;border-left:1px solid #303137;border-radius:0;background:#24212c;padding:5px 10px;color:#b6a4c8}#preset-form input,#preset-form select{display:block;width:100%;margin:8px 0 18px;padding:10px;background:#28252f;border:1px solid #50425f;border-radius:6px;color:#eee}#preset-error{color:#ffadad}
 
 #preset-layer-choice{display:block;width:100%;margin:8px 0 18px;padding:10px;background:#28252f;border:1px solid #50425f;border-radius:6px;color:#eee}
+
+.trail-length-label{margin-top:16px}.trail-length-label small{display:block;color:#97939f;font-size:10px;line-height:1.5;margin-top:8px}

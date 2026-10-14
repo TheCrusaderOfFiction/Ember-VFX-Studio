@@ -1,4 +1,4 @@
-# Ember VFX Studio — current desktop release (1.10.3)
+# Ember VFX Studio — current desktop release (1.11)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**. The existing desktop app folder is updated in place. Keep its runtime and resources together. No browser or server is required. Clicking the window X exits Ember completely. Opening Ember again focuses its existing window instead of starting another copy.
 
@@ -13,9 +13,13 @@ Open **release-v1.2/Ember-win32-x64/Ember.exe**. The existing desktop app folder
 
 New, Open, Undo, and Redo are in the toolbar. Restart resets all layer simulations. Recovery settings are stored locally; save a project file for portable backups.
 
+## Longer trails
+
+Enable **Trail**, then set **Trail length**. 1× is the original length; use 3× or 5× for longer streaks (range 0.1×–10×). Each layer has its own length. Use a Trail length animation key to change it over time. Projects, presets, and Niagara exports keep the multiplier. Preview trails follow current velocity rather than recording curved paths; Niagara represents them as stretched sprites.
+
 ## Your own presets
 
-Click **Save as preset** in the library, name your creation, and save the whole effect or just the selected particle layer. Find it under **My presets**. Click it to apply particles to the active layer; for multi-layer presets, choose which saved layer to use. Other layers stay intact. The picker also offers **Add all layers to effect** to add the entire preset. **Add to effect** combines all its layers with your current particles. Motion, positions, and animations are preserved. Saving makes an independent copy; use Save project for a portable backup.
+Click **Save as preset** in the library, name your creation, and save the whole effect or just the selected particle layer. Find it under **My presets**. Click it to apply particles to the active layer; for multi-layer presets, choose which saved layer to use. Other layers stay intact. The picker also offers **Add all layers to effect** to add the entire preset. **Add to effect** combines all its layers with your current particles. Motion, positions, and animations are preserved. Saving makes an independent copy. Presets save immediately and are flushed to disk when you close Ember; they remain available the next time you open it. Use Save project for a portable backup.
 
 ## Documentation
 

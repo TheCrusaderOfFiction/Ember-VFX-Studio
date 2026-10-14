@@ -9,5 +9,9 @@ function installLifecycle(app,getWindow,{schedule=setTimeout}={}){
  app.on('window-all-closed',()=>app.quit());
  return true;
 }
-function closeWithWindow(app,window){window.on('closed',()=>app.quit());}
+function closeWithWindow(app,window){
+ // Flush browser storage while the renderer and its session still exist.
+ window.on('close',()=>window.webContents.session.flushStorageData());
+ window.on('closed',()=>app.quit());
+}
 module.exports={installLifecycle,closeWithWindow};

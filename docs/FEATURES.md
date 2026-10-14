@@ -22,7 +22,7 @@ Try this: A preset is a starting point; it is not a locked effect.
 
 Workflow
 
-Click Save as preset in the library. Name it and choose Whole effect to keep all layers, or Selected particle layer to save just the layer you are editing. Particle positions, motion, randomness, and animation are included. Find saved copies in My presets or search by name. Clicking a saved preset replaces only the active layer’s particle settings and animation. Other layers, the project name, and the active layer’s name and visibility stay as they are. For a preset with multiple layers, choose which particle layer to use, or click Add all layers to effect in the picker to add the entire preset alongside your current layers. Undo restores the previous settings. Add to effect combines its layers with your current effect when there is room within the eight-layer limit. The × button deletes the library copy after confirmation. Presets are stored on this device; save an Ember project file for a portable backup. Saving a preset makes a copy: later edits do not change it. Save again to create another version. Up to 100 saved presets.
+Click Save as preset in the library. Name it and choose Whole effect to keep all layers, or Selected particle layer to save just the layer you are editing. Particle positions, motion, randomness, and animation are included. Find saved copies in My presets or search by name. Clicking a saved preset replaces only the active layer’s particle settings and animation. Other layers, the project name, and the active layer’s name and visibility stay as they are. For a preset with multiple layers, choose which particle layer to use, or click Add all layers to effect in the picker to add the entire preset alongside your current layers. Undo restores the previous settings. Add to effect combines its layers with your current effect when there is room within the eight-layer limit. The × button deletes the library copy after confirmation. Presets save immediately on this device and remain available after closing and reopening Ember. Save an Ember project file for a portable backup. Saving a preset makes a copy: later edits do not change it. Save again to create another version. Up to 100 saved presets.
 
 Try this: Build a fireball from flames, smoke, and sparks, then save the whole effect as Fireball.
 
@@ -121,6 +121,14 @@ Appearance
 Adds a bright core and halo in the preview. In Unreal it uses emissive particle color; scene bloom affects the visible halo.
 
 Try this: Turn glow off for leaves, confetti, and opaque-looking debris.
+
+## Trail length
+
+Appearance
+
+Enable Trail, then adjust Trail length from 0.1× to 10×. 1× preserves the original streak length, 3× triples it, and 10× makes a much longer streak. Each layer has its own length. Trail length can change over time using a property animation, and is saved in projects and presets. Preview streaks extend behind the particle along its current velocity; they do not record a curved movement history. Niagara export uses stretched velocity-aligned sprites with the same length multiplier, so the exact appearance can differ.
+
+Try this: Try a laser or spark effect with Trail on and Trail length at 4×.
 
 ## Trails
 

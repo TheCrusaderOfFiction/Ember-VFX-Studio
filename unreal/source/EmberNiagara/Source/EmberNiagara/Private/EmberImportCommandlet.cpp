@@ -12,7 +12,7 @@
 #include "NiagaraDataSetAccessor.h"
 
 namespace {
-bool VerifyTimeline(const FString& Asset,bool Orbit=false,bool Stretch=false,bool Distance=false) {
+bool VerifyTimeline(const FString& Asset,bool Orbit=false,bool Stretch=false,bool Distance=false,bool TrailLength=false) {
     auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);
     if(!System||!System->IsReadyToRun()) {
         UE_LOG(LogTemp,Error,TEXT("EMBER_TIMELINE_TEST System is not ready to simulate"));
@@ -35,7 +35,10 @@ bool VerifyTimeline(const FString& Asset,bool Orbit=false,bool Stretch=false,boo
         auto* Instance=Controller.IsValid()?Controller->GetSystemInstance_Unsafe():nullptr;
         const int32 Count=Instance&&Instance->GetEmitters().Num()>0?Instance->GetEmitters()[0]->GetNumParticles():-1;
         UE_LOG(LogTemp,Display,TEXT("EMBER_TIMELINE_SAMPLE %.2f %d"),Step*.25,Count);
-        if(Orbit){
+        if(TrailLength){
+            if(!Instance||Instance->GetEmitters().Num()!=3){Valid=false;continue;}
+            for(int32 EmitterIndex=0;EmitterIndex<3;EmitterIndex++){auto& Emitter=Instance->GetEmitters()[EmitterIndex].Get();const auto& Data=Emitter.GetParticleData();const auto Sizes=FNiagaraDataSetAccessor<FVector2f>(Data,TEXT("SpriteSize")).GetReader(Data);const int32 TrailCount=Emitter.GetNumParticles();if(TrailCount!=100||!Sizes.IsValid()){Valid=false;continue;}const float Expected=EmitterIndex==0?(Step<=3?2.0f:10.0f):EmitterIndex==1?1.0f:2.0f;for(int32 Index=0;Index<TrailCount;Index++){const auto Size=Sizes.Get(Index);if(!FMath::IsFinite(Size.X)||!FMath::IsFinite(Size.Y)||Size.X<=0||((Step<=3||Step>=6)&&FMath::Abs(Size.Y/Size.X-Expected)>.01f))Valid=false;}UE_LOG(LogTemp,Display,TEXT("EMBER_TRAIL_SAMPLE %d %.2f ratio %.3f"),EmitterIndex,Step*.25,Sizes.Get(0).Y/Sizes.Get(0).X);}
+        }else if(Orbit){
             if(Count!=100){Valid=false;continue;}
             const auto& Data=Instance->GetEmitters()[0]->GetParticleData();
             const auto Positions=FNiagaraDataSetAccessor<FNiagaraPosition>(Data,TEXT("Position")).GetReader(Data);
@@ -62,6 +65,7 @@ int32 UEmberImportCommandlet::Main(const FString& Params) {
     FString File, Asset, Error;
     if(!FParse::Value(*Params,TEXT("Effect="),File)){UE_LOG(LogTemp,Error,TEXT("Missing -Effect=<Ember JSON file>"));return 1;}
     if(!FEmberImporter::Import(File,Asset,Error)){UE_LOG(LogTemp,Error,TEXT("EMBER_IMPORT_FAILED %s"),*Error);return 1;}
+    if(FParse::Param(*Params,TEXT("VerifyTrailLength"))&&!VerifyTimeline(Asset,false,false,false,true))return 1;
     if(FParse::Param(*Params,TEXT("VerifyDistance"))&&!VerifyTimeline(Asset,true,true,true))return 1;
     if(FParse::Param(*Params,TEXT("VerifyStretch"))&&!VerifyTimeline(Asset,true,true))return 1;
     if(FParse::Param(*Params,TEXT("VerifyOrbit"))&&!VerifyTimeline(Asset,true))return 1;
