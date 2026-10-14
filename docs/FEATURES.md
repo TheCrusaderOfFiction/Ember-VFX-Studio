@@ -2,6 +2,14 @@
 
 Available inside the app through Documentation, F1, and the ? buttons beside controls.
 
+## Anime filter
+
+Appearance
+
+Enable Anime filter under Look & feel for the selected layer. Sprites gain sharp silhouettes, flat shading bands, and dark ink edges. Imported meshes use view-based stepped shading and an ink rim. Shading steps ranges from 2 to 6; fewer steps give a flatter cel look. Ink outline ranges from 0 to 25 percent; set 0 for no ink. Soft glow is suppressed on filtered particles to keep edges readable. Particle motion and animation stay unchanged. Each layer can use a different style. Apply this look to all layers copies the current filter switch, shading steps and outline across the whole effect. With the switch off, it removes the filter from every layer. The settings save with projects and presets and export into generated Niagara materials and Blender materials. Blender uses view-based mesh shading, so its look differs from camera-facing sprites. Native project systems are not changed by the builder filter.
+
+Try this: Try Campfire with 3 shading steps and 8 percent outline, then add a softer smoke layer.
+
 ## Project Niagara workspace
 
 Native editor

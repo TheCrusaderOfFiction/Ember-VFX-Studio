@@ -7,13 +7,26 @@ def clean_scene():
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete(use_global=False)
 
-def material(name, glow):
+def material(name, glow, effect=None):
     mat=bpy.data.materials.new(name);mat.use_nodes=True
     nodes=mat.node_tree.nodes;nodes.clear()
     out=nodes.new('ShaderNodeOutputMaterial');shader=nodes.new('ShaderNodeBsdfPrincipled');color=nodes.new('ShaderNodeAttribute');color.attribute_name='ember_color'
-    mat.node_tree.links.new(color.outputs['Color'],shader.inputs['Base Color'])
+    source=color.outputs['Color']
+    if effect and effect.get('anime',False):
+        links=mat.node_tree.links;steps=effect.get('animeSteps',3);outline=effect.get('animeOutline',8)/100
+        facing=nodes.new('ShaderNodeLayerWeight');facing.inputs['Blend'].default_value=.5
+        inverse=nodes.new('ShaderNodeMath');inverse.operation='SUBTRACT';inverse.inputs[0].default_value=1;links.new(facing.outputs['Facing'],inverse.inputs[1])
+        multiply=nodes.new('ShaderNodeMath');multiply.operation='MULTIPLY';multiply.inputs[1].default_value=steps;links.new(inverse.outputs[0],multiply.inputs[0])
+        floor=nodes.new('ShaderNodeMath');floor.operation='FLOOR';links.new(multiply.outputs[0],floor.inputs[0])
+        scale=nodes.new('ShaderNodeMath');scale.operation='MULTIPLY_ADD';scale.inputs[1].default_value=.65/(steps-1);scale.inputs[2].default_value=.35;links.new(floor.outputs[0],scale.inputs[0])
+        shade=nodes.new('ShaderNodeMixRGB');shade.blend_type='MULTIPLY';shade.inputs[0].default_value=1;links.new(source,shade.inputs[1]);links.new(scale.outputs[0],shade.inputs[2])
+        rim=nodes.new('ShaderNodeMath');rim.operation='LESS_THAN';rim.inputs[1].default_value=outline;links.new(inverse.outputs[0],rim.inputs[0])
+        ink=nodes.new('ShaderNodeMixRGB');ink.inputs[2].default_value=(.008,.01,.018,1);links.new(rim.outputs[0],ink.inputs[0]);links.new(shade.outputs[0],ink.inputs[1]);source=ink.outputs[0]
+        shader.inputs['Specular IOR Level'].default_value=0
+        links.new(source,shader.inputs['Emission Color']);shader.inputs['Emission Strength'].default_value=1
+    mat.node_tree.links.new(source,shader.inputs['Base Color'])
     mat.node_tree.links.new(color.outputs['Alpha'],shader.inputs['Alpha'])
-    if glow:
+    if glow and not (effect and effect.get('anime',False)):
         mat.node_tree.links.new(color.outputs['Color'],shader.inputs['Emission Color']);shader.inputs['Emission Strength'].default_value=3
     shader.inputs['Roughness'].default_value=.65
     mat.node_tree.links.new(shader.outputs['BSDF'],out.inputs['Surface'])
@@ -71,7 +84,7 @@ def export_effect(job):
         if extent<=0:raise ValueError('Particle mesh has no dimensions.')
         obj.data.transform(Matrix.Scale(2/extent,4) @ Matrix.Translation(-center));obj.name='Ember source mesh '+reference[:8];obj.hide_render=True;obj.hide_set(True);templates[reference]=obj
     for layer in data['layers']:
-        collection=bpy.data.collections.new(layer['name']);scene.collection.children.link(collection);mat=material('Ember '+layer['name'],layer['effect']['glow']);head=node_group('Ember '+layer['name'],mat,layer['effect']['sprite'],mesh_object=templates.get(layer['effect'].get('meshRef')));tail=node_group('Ember trail '+layer['name'],mat,trail=True) if layer['effect']['trail'] else None
+        collection=bpy.data.collections.new(layer['name']);scene.collection.children.link(collection);mat=material('Ember '+layer['name'],layer['effect']['glow'],layer['effect']);head=node_group('Ember '+layer['name'],mat,layer['effect']['sprite'],mesh_object=templates.get(layer['effect'].get('meshRef')));tail=node_group('Ember trail '+layer['name'],mat,trail=True) if layer['effect']['trail'] else None
         for index,points in enumerate(layer['frames']):
             frame_object(collection,'Ember '+layer['name']+' '+str(index+1),points,index+1,head)
             if tail:frame_object(collection,'Ember trail '+layer['name']+' '+str(index+1),points,index+1,tail,True)

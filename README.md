@@ -1,4 +1,4 @@
-# Ember VFX Studio — current desktop release (1.14)
+# Ember VFX Studio — current desktop release (1.15)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
 
@@ -18,6 +18,10 @@ This workspace preserves advanced Niagara features in native assets. Full graph 
 6. Save project writes an editable Ember JSON file.
 
 New, Open, Undo, and Redo are in the toolbar. Restart resets all layer simulations. Recovery settings are stored locally; save a project file for portable backups.
+
+## Anime filter
+
+Enable **Anime filter** under Look & feel on any particle layer. Adjust **Shading steps** (2–6) and **Ink outline** (0–25%). Use **Apply this look to all layers** to style the whole effect. Sprites use crisp silhouettes and cel shading; imported meshes use stepped view-based shading with dark rims. Filtered particles suppress their soft glow. Settings persist in projects and presets, and generated Niagara and Blender materials include the style. Blender shades mesh geometry, so it is an approximation of the sprite preview. This does not apply a screen filter to existing native Niagara systems or an Unreal scene.
 
 ## Longer trails
 

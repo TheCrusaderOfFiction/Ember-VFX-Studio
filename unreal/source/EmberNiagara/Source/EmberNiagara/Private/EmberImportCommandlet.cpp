@@ -18,6 +18,11 @@
 #include "NiagaraParameterStore.h"
 #include "Misc/PackageName.h"
 #include "UObject/SavePackage.h"
+#include "Materials/Material.h"
+#include "Materials/MaterialExpressionCustom.h"
+#include "MaterialShared.h"
+#include "ShaderCompiler.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 namespace {
 bool VerifyTimeline(const FString& Asset,bool Orbit=false,bool Stretch=false,bool Distance=false,bool TrailLength=false) {
@@ -101,6 +106,23 @@ int32 UEmberImportCommandlet::Main(const FString& Params) {
     if(FParse::Value(*Params,TEXT("MeshExport="),MeshAsset)){if(!FParse::Value(*Params,TEXT("MeshOutput="),MeshOutput)||!EmberExportMesh(MeshAsset,MeshOutput,Error)){UE_LOG(LogTemp,Error,TEXT("EMBER_MESH_FAILED %s"),*Error);return 1;}UE_LOG(LogTemp,Display,TEXT("EMBER_MESH_EXPORT_SUCCESS"));return 0;}
     if(!FParse::Value(*Params,TEXT("Effect="),File)){UE_LOG(LogTemp,Error,TEXT("Missing -Effect=<Ember JSON file>"));return 1;}
     if(!FEmberImporter::Import(File,Asset,Error)){UE_LOG(LogTemp,Error,TEXT("EMBER_IMPORT_FAILED %s"),*Error);return 1;}
+    if(FParse::Param(*Params,TEXT("VerifyAnime"))){
+        auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);TArray<UMaterial*> Materials;
+        for(const auto& Handle:System->GetEmitterHandles())for(auto* Renderer:Handle.GetEmitterData()->GetRenderers()){
+            UMaterial* Material=nullptr;if(auto* Sprite=Cast<UNiagaraSpriteRendererProperties>(Renderer))Material=Cast<UMaterial>(Sprite->Material);if(auto* Mesh=Cast<UNiagaraMeshRendererProperties>(Renderer))if(!Mesh->OverrideMaterials.IsEmpty())Material=Cast<UMaterial>(Mesh->OverrideMaterials[0].ExplicitMat);
+            if(!Material||Material->BlendMode!=BLEND_Translucent||!Cast<UMaterialExpressionCustom>(Material->GetEditorOnlyData()->EmissiveColor.Expression))return 1;
+            Material->ForceRecompileForRendering();Materials.AddUnique(Material);
+        }
+
+        for(auto* Material:Materials){
+#if ENGINE_MINOR_VERSION >= 8
+        auto* Resource=Material->GetMaterialResource(SP_PCD3D_SM5);
+#else
+        auto* Resource=Material->GetMaterialResource(ERHIFeatureLevel::SM5);
+#endif
+        if(Resource)Resource->FinishCompilation();if(!Resource||!Resource->GetCompileErrors().IsEmpty()||!Resource->HasValidGameThreadShaderMap()){UE_LOG(LogTemp,Error,TEXT("EMBER_ANIME_SHADER_INVALID %s resource=%d"),*Material->GetName(),Resource!=nullptr);if(Resource)for(const auto& Message:Resource->GetCompileErrors())UE_LOG(LogTemp,Error,TEXT("EMBER_ANIME_SHADER_ERROR %s"),*Message);return 1;}}
+        if(Materials.Num()<5)return 1;UE_LOG(LogTemp,Display,TEXT("EMBER_ANIME_SHADER_SUCCESS %d"),Materials.Num());
+    }
     if(FParse::Param(*Params,TEXT("VerifyWorkspaceFixture"))){
         auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);auto& Store=System->GetExposedParameters();
         Store.SetParameterValue(2.0f,FNiagaraVariable(FNiagaraTypeDefinition::GetFloatDef(),TEXT("User.Intensity")),true);
