@@ -1,5 +1,7 @@
 #include "EmberImportCommandlet.h"
 #include "EmberImporter.h"
+#include "EmberMeshTransfer.h"
+#include "Misc/FileHelper.h"
 #include "Misc/Parse.h"
 #include "Engine/World.h"
 #include "Engine/Engine.h"
@@ -11,6 +13,7 @@
 #include "NiagaraEmitterInstance.h"
 #include "NiagaraDataSetAccessor.h"
 #include "NiagaraSpriteRendererProperties.h"
+#include "NiagaraMeshRendererProperties.h"
 
 namespace {
 bool VerifyTimeline(const FString& Asset,bool Orbit=false,bool Stretch=false,bool Distance=false,bool TrailLength=false) {
@@ -87,9 +90,12 @@ bool VerifyTimeline(const FString& Asset,bool Orbit=false,bool Stretch=false,boo
 }
 UEmberImportCommandlet::UEmberImportCommandlet() { IsClient=false; IsServer=false; IsEditor=true; LogToConsole=true; }
 int32 UEmberImportCommandlet::Main(const FString& Params) {
-    FString File, Asset, Error;
+    FString File, Asset, Error,MeshFile,MeshAsset,MeshOutput;
+    if(FParse::Value(*Params,TEXT("MeshImport="),MeshFile)){if(!EmberImportMesh(MeshFile,Asset,Error)){UE_LOG(LogTemp,Error,TEXT("EMBER_MESH_FAILED %s"),*Error);return 1;}UE_LOG(LogTemp,Display,TEXT("EMBER_MESH_IMPORT_SUCCESS %s"),*Asset);return 0;}
+    if(FParse::Value(*Params,TEXT("MeshExport="),MeshAsset)){if(!FParse::Value(*Params,TEXT("MeshOutput="),MeshOutput)||!EmberExportMesh(MeshAsset,MeshOutput,Error)){UE_LOG(LogTemp,Error,TEXT("EMBER_MESH_FAILED %s"),*Error);return 1;}UE_LOG(LogTemp,Display,TEXT("EMBER_MESH_EXPORT_SUCCESS"));return 0;}
     if(!FParse::Value(*Params,TEXT("Effect="),File)){UE_LOG(LogTemp,Error,TEXT("Missing -Effect=<Ember JSON file>"));return 1;}
     if(!FEmberImporter::Import(File,Asset,Error)){UE_LOG(LogTemp,Error,TEXT("EMBER_IMPORT_FAILED %s"),*Error);return 1;}
+    if(FParse::Param(*Params,TEXT("VerifyMeshRenderer"))){auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);if(!System||System->GetEmitterHandles().Num()!=1)return 1;int32 Meshes=0,Trails=0;for(auto* Renderer:System->GetEmitterHandles()[0].GetEmitterData()->GetRenderers()){if(auto* Mesh=Cast<UNiagaraMeshRendererProperties>(Renderer)){if(Mesh->Meshes.Num()!=1||!Mesh->Meshes[0].Mesh||Mesh->OverrideMaterials.IsEmpty()||!Mesh->OverrideMaterials[0].ExplicitMat)return 1;Meshes++;}else if(auto* Trail=Cast<UNiagaraSpriteRendererProperties>(Renderer)){if(Trail->PositionBinding.GetParamMapBindableVariable().GetName()!=FName(TEXT("Particles.EmberTrailPosition")))return 1;Trails++;}}if(Meshes!=1||Trails!=1)return 1;UE_LOG(LogTemp,Display,TEXT("EMBER_MESH_RENDERER_SUCCESS"));}
     if(FParse::Param(*Params,TEXT("VerifyTrailLength"))&&!VerifyTimeline(Asset,false,false,false,true))return 1;
     if(FParse::Param(*Params,TEXT("VerifyDistance"))&&!VerifyTimeline(Asset,true,true,true))return 1;
     if(FParse::Param(*Params,TEXT("VerifyStretch"))&&!VerifyTimeline(Asset,true,true))return 1;

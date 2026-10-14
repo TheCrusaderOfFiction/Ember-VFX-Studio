@@ -19,3 +19,7 @@ input[type="number"]{width:100%;box-sizing:border-box;background:#22232b;border:
 .trail-length-label{margin-top:16px}.trail-length-label small{display:block;color:#97939f;font-size:10px;line-height:1.5;margin-top:8px}
 
 #unreal-connect{display:block;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px}#connect-unreal-version{display:block;width:100%;margin:8px 0 18px;padding:10px;background:#28252f;color:#eee;border:1px solid #50425f;border-radius:6px}#unreal-project-current{overflow-wrap:anywhere}
+
+#blender-menu{display:block;font-size:10px;white-space:nowrap}#blender-progress{overflow-wrap:anywhere}#blender-installation{overflow-wrap:anywhere;font-size:11px}#import-particle-mesh{margin-bottom:18px;font-size:11px}
+
+.blender-dialog{width:720px;max-height:90vh;overflow-y:auto}.blender-dialog h3{margin:20px 0 8px}.blender-dialog label{margin-bottom:12px}@media(max-width:1400px){header .brand small{display:none}.project input{width:150px}header{padding-left:16px;padding-right:16px}}

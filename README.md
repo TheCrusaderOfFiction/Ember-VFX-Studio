@@ -1,4 +1,4 @@
-# Ember VFX Studio — current desktop release (1.12)
+# Ember VFX Studio — current desktop release (1.13)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
 
@@ -24,6 +24,14 @@ Click **Save as preset** in the library, name your creation, and save the whole 
 ## Documentation
 
 Click **Documentation**, press **F1**, or use the **?** button beside a feature. The offline menu has searchable articles, ranges, examples, and keyboard shortcuts for every feature. A printable reference is in [docs/FEATURES.md](docs/FEATURES.md).
+
+## Blender and mesh transfer
+
+Open **Blender & files**. Ember detects Blender or lets you choose its executable. **Save effect as .blend** bakes visible layers, trails, and particle animation into a replayable Blender scene. **Open Ember effect from .blend** recovers the embedded original settings; manual Blender scene edits do not become Ember animation keys.
+
+Use **Import Blender mesh** to load visible mesh objects from `.blend`, `.glb`, or `.fbx` as particle shapes. Meshes use layer colors in Ember and persist in a local cache. Keep the original file for moving projects to another computer.
+
+Connect Unreal, then use **Send selected mesh to Unreal** or **Unreal mesh → Blender** for static meshes. Exporting mesh-particle effects automatically imports their meshes and creates Niagara mesh renderers. Existing Unreal assets are preserved. Close the Unreal project before transferring. Rigs, Blueprints, scene logic, and Niagara node graphs are not converted between application formats. Blender particle scenes are baked; sprite styles become simple 3D geometry. Tested with installed Blender 5.1.
 
 ## Connect your Unreal project
 

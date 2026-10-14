@@ -442,6 +442,30 @@ The snapshot button saves the current 3D view as a PNG image. It includes the pr
 
 Try this: Pause and frame the camera before taking a snapshot.
 
+## Blender effects and files
+
+Files
+
+Open Blender & files in the top bar. Ember detects Blender or lets you choose blender.exe. Save effect as .blend bakes visible particle layers over 1–20 seconds at 1–30 frames per second. Each layer has its own collection, geometry-node particle shapes, trail geometry, and frame visibility animation. The scene replays after reopening without running scripts. Original Ember settings are embedded in a text block; Open Ember effect from .blend restores those settings. Later manual Blender edits are not converted back into Ember animation keys. Units are converted from Ember centimeters to Blender meters. Large bakes are limited; lower the frame rate or duration if needed.
+
+Try this: Export a one-second test at 12 fps first, then open it in Blender and play the timeline.
+
+## Imported mesh particles
+
+Appearance
+
+Click Import Blender mesh under Shape & motion, or use Blender & files. Choose a .blend, .glb, or .fbx file. Visible mesh objects are combined as a static particle shape. Use Render particles as to switch between sprites and the imported mesh. Meshes use the layer color and lifetime opacity in Ember; positions, randomness, animation, and trails still work. The local mesh cache persists after closing, and projects and presets remember its reference. Keep the original mesh file for portability; another computer needs it imported again. Each mesh is normalized so particle size remains useful.
+
+Try this: Import a small Blender cube, choose Imported 3D mesh, and add random particle angle for varied mesh orientations.
+
+## Blender and Unreal mesh transfers
+
+Export
+
+Connect an Unreal project first. Send selected mesh to Unreal imports the selected Blender mesh as a new static-mesh asset under Content/Ember/Meshes. Exporting an effect with mesh particles also imports the referenced meshes automatically and creates Niagara mesh renderers. Unreal mesh → Blender lets you pick a static-mesh .uasset inside that project’s Content folder and saves a .blend scene. Close the project in Unreal before a transfer. Skeletal rigs, Blueprint behavior, and Niagara graphs are not translated; transfer is for static mesh geometry and compatible materials. Particle effects are baked for Blender, while their original Ember settings remain available for return to Niagara.
+
+Try this: Model a shard in Blender, import it in Ember, then export a burst of mesh particles to the connected Unreal project.
+
 ## Connect an Unreal project
 
 Export
@@ -470,6 +494,6 @@ Try this: The plugin imports saved project JSON without Python.
 
 Export
 
-Ember is a standalone sprite-particle authoring app. It does not implement every Niagara feature: arbitrary node scripting, skeletal-mesh sampling, event graphs, mesh renderers, and arbitrary scene collisions are not available.
+Ember is a standalone sprite and mesh particle authoring app. It does not implement every Niagara feature: arbitrary node scripting, skeletal-mesh sampling, event graphs, skeletal animations, and arbitrary scene collisions are not available.
 
 Try this: Use the documented controls for this release; do not expect complete Niagara parity.
