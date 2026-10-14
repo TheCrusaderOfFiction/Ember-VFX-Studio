@@ -1,6 +1,12 @@
-# Ember VFX Studio — current desktop release (1.13)
+# Ember VFX Studio — current desktop release (1.14)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
+
+## Native Niagara editor workspace
+
+Choose **Project Niagara systems**, connect your Unreal project, and click **Read project effects**. Save and close the project in Unreal before reading or writing from Ember. Select an effect to inspect its emitters, CPU/GPU simulation, renderers, and exposed controls. Edit numbers, integers, switches, vectors, and linear RGBA colors, then **Save a new system**. Copies retain native Niagara graphs and dependencies; originals stay unchanged. **Open full editor & preview** launches Unreal with the selected Niagara system.
+
+This workspace preserves advanced Niagara features in native assets. Full graph authoring and native simulation still use Unreal's editor. Ember does not yet offer a standalone replacement for all Niagara authoring tools. Native systems stay in the connected project and are separate from Ember JSON projects and presets. Read the in-app documentation for the workflow.
 
 ## Create an effect
 

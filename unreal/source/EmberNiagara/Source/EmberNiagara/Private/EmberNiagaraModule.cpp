@@ -4,6 +4,11 @@
 #include "IDesktopPlatform.h"
 #include "Misc/MessageDialog.h"
 #include "EmberImporter.h"
+#include "Editor.h"
+#include "Subsystems/AssetEditorSubsystem.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
+#include "NiagaraSystem.h"
 class FEmberNiagaraModule : public IModuleInterface {
 public:
     virtual void StartupModule() override {
@@ -13,6 +18,8 @@ public:
         if (UToolMenus::IsToolMenuUIEnabled()) {UToolMenus::UnRegisterStartupCallback(this);UToolMenus::UnregisterOwner(this);}
     }
     void RegisterMenu() {
+        FString Asset;
+        if(FParse::Value(FCommandLine::Get(),TEXT("EmberOpenSystem="),Asset)&&Asset.StartsWith(TEXT("/Game/"))&&GEditor){if(auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset))GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->OpenEditorForAsset(System);}
         FToolMenuOwnerScoped Owner(this);
         UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools");
         Menu->FindOrAddSection("Ember").AddMenuEntry("EmberImport", FText::FromString("Import Ember VFX…"), FText::FromString("Create a Niagara system from an Ember project."), FSlateIcon(), FUIAction(FExecuteAction::CreateRaw(this, &FEmberNiagaraModule::ChooseFile)));

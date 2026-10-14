@@ -2,6 +2,22 @@
 
 Available inside the app through Documentation, F1, and the ? buttons beside controls.
 
+## Project Niagara workspace
+
+Native editor
+
+Choose Project Niagara systems to browse your connected project. Save and close that Unreal project before reading assets or saving a copy. Read project effects lists native Niagara systems. Select a system to see its emitters, CPU or GPU simulation, renderer types, and exposed User Parameters. Float, integer, boolean, vector and linear RGBA color parameters can be changed here. Save a new system duplicates the whole native asset and applies those controls without replacing its graphs. The source stays unchanged. Other parameter types remain editable in Unreal. Open full editor & preview launches Unreal with the selected system. Native GPU, skeletal, event, collision, ribbon, stage and script features execute in Unreal, not in the Ember particle preview. Builder projects and native systems remain separate; the native workspace does not translate graphs into builder layers.
+
+Try this: Expose User Parameters in a complex Niagara effect to give it a small set of easy controls.
+
+## Save native system copies
+
+Native editor
+
+Copies are saved under Content/Ember/Systems with unique names. Use letters, numbers and underscores. A copy retains the full Niagara system and references to its existing dependencies. It belongs to the connected project; Ember JSON saves and presets do not include it. Do not move the system to another project without its dependencies. Close Unreal before saving a copy, then open the new system to preview and continue editing.
+
+Try this: Make Fireball_Blue from an existing native fireball and adjust its exposed color.
+
 ## Getting started
 
 Workflow
