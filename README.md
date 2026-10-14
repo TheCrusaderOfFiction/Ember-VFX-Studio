@@ -1,6 +1,6 @@
 # Ember VFX Studio — current desktop release (1.11)
 
-Open **release-v1.2/Ember-win32-x64/Ember.exe**. The existing desktop app folder is updated in place. Keep its runtime and resources together. No browser or server is required. Clicking the window X exits Ember completely. Opening Ember again focuses its existing window instead of starting another copy.
+Open **release-v1.2/Ember-win32-x64/Ember.exe**.
 
 ## Create an effect
 
@@ -9,7 +9,7 @@ Open **release-v1.2/Ember-win32-x64/Ember.exe**. The existing desktop app folder
 3. Click **Add to effect** beneath a preset to combine its particles with your current layers. The layer toolbar + adds a blank layer. Add up to eight layers for independent colors and behaviors. Name, duplicate, hide, and remove layers as needed.
 4. Use gravity, turbulence, floor bounce, size over life, and opacity over life to shape the result.
 5. Orbit, pan, zoom, and use camera views to inspect it. Pause to capture a PNG.
-6. Save project writes an editable Ember JSON file. Open accepts both older v1 projects and layered v2 projects.
+6. Save project writes an editable Ember JSON file.
 
 New, Open, Undo, and Redo are in the toolbar. Restart resets all layer simulations. Recovery settings are stored locally; save a project file for portable backups.
 
@@ -60,9 +60,3 @@ Under **Shape & motion → Particle movement**, choose **Aim the velocity** and 
 **Spin variation** gives each orbiting particle a stable random speed multiplier. **Direction variation** adds random launch heading/elevation, while **Random particle angle** varies the starting sprite orientation. Use squares, diamonds, or stars to see visual rotation. **Emission stretch X/Y/Z** scales the spawn region independently (0.1×–10×); Reset stretch returns all axes to 1×. X/Y stretching makes orbit rings elliptical. Point and flat spawn regions gain height when Z is above 1×. All new controls can be keyframed and exported.
 
 **Distance from center variation** widens ring emission into a band by assigning different radii to new particles. At 40%, radii range from 60% to 140% of the base ring size. Each particle keeps its selected orbit size. This is separate from spin-speed variation and can be animated for new particles.
-
-## GitHub
-
-Source repository: https://github.com/TheCrusaderOfFiction/Ember. After reviewing and committing changes, use `pnpm push` to push main. Desktop packages, dependencies, private saves, and Unreal build outputs are excluded from Git. The only local desktop package to keep is `release-v1.2/Ember-win32-x64`; other release folders are redundant.
-
-The source uses the repository’s existing GPL-3.0 license. To package on a fresh checkout, first build the Niagara plugin for each Unreal version and collect the binaries into `unreal/packaged`. Those generated binaries remain local.
