@@ -442,6 +442,14 @@ The snapshot button saves the current 3D view as a PNG image. It includes the pr
 
 Try this: Pause and frame the camera before taking a snapshot.
 
+## Connect an Unreal project
+
+Export
+
+Click Connect Unreal project in the top bar, choose Unreal 5.6 or 5.8, then click Choose project. Select a .uproject file in the file picker. Ember reads the project’s engine version and remembers your selection after closing. Exports go to the connected project, while a final confirmation still tells you what will be created. Use the same button to change projects or disconnect. Connecting does not change any Unreal project files.
+
+Try this: Connect your game project once so you can export multiple effects without selecting its file each time.
+
 ## Unreal export
 
 Export

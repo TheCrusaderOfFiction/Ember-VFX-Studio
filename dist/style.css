@@ -17,3 +17,5 @@ input[type="number"]{width:100%;box-sizing:border-box;background:#22232b;border:
 #preset-layer-choice{display:block;width:100%;margin:8px 0 18px;padding:10px;background:#28252f;border:1px solid #50425f;border-radius:6px;color:#eee}
 
 .trail-length-label{margin-top:16px}.trail-length-label small{display:block;color:#97939f;font-size:10px;line-height:1.5;margin-top:8px}
+
+#unreal-connect{display:block;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px}#connect-unreal-version{display:block;width:100%;margin:8px 0 18px;padding:10px;background:#28252f;color:#eee;border:1px solid #50425f;border-radius:6px}#unreal-project-current{overflow-wrap:anywhere}

@@ -1,4 +1,4 @@
-# Ember VFX Studio — current desktop release (1.11.1)
+# Ember VFX Studio — current desktop release (1.12)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
 
@@ -24,6 +24,10 @@ Click **Save as preset** in the library, name your creation, and save the whole 
 ## Documentation
 
 Click **Documentation**, press **F1**, or use the **?** button beside a feature. The offline menu has searchable articles, ranges, examples, and keyboard shortcuts for every feature. A printable reference is in [docs/FEATURES.md](docs/FEATURES.md).
+
+## Connect your Unreal project
+
+Click **Connect Unreal project** in Ember, then **Choose project…** and select your `.uproject` file. Ember detects Unreal 5.6 or 5.8 and remembers the project after closing. Exports then use that project. Use the same menu to change projects or disconnect. Connecting only reads your project; plugin installation happens when you confirm an export.
 
 ## Export all layers to Unreal
 
