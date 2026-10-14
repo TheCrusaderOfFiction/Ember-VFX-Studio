@@ -1,0 +1,17 @@
+{
+  "format": "ember-vfx",
+  "version": 1,
+  "name": "Test_magic_continuous",
+  "effect": {
+    "id": "magic",
+    "amount": 65,
+    "size": 3,
+    "speed": 48,
+    "spread": 65,
+    "life": 3,
+    "color": "#b6a0ff",
+    "mode": "continuous",
+    "glow": true,
+    "trail": true
+  }
+}

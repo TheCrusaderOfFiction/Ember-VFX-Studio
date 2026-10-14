@@ -1,0 +1,19 @@
+node_modules/
+release/
+unreal/build/
+unreal/validation/
+unreal/packaged/
+**/Binaries/
+**/Intermediate/
+**/Saved/
+ember-site.zip
+
+release*/
+unreal/*.log
+unreal/*.uba
+
+# Personal projects and local hosting metadata never belong in source control.
+Saves/
+.openai/
+Ember/
+unreal/build*.json

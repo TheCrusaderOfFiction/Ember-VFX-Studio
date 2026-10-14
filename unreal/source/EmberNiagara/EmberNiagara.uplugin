@@ -1,0 +1,24 @@
+{
+  "FileVersion": 3,
+  "Version": 2,
+  "VersionName": "1.6.0",
+  "FriendlyName": "Ember Niagara",
+  "Description": "Import Ember particle projects as editable Niagara systems.",
+  "Category": "FX",
+  "CreatedBy": "Ember",
+  "CanContainContent": false,
+  "EnabledByDefault": true,
+  "Modules": [
+    {
+      "Name": "EmberNiagara",
+      "Type": "Editor",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "Niagara",
+      "Enabled": true
+    }
+  ]
+}

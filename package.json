@@ -1,1 +1,23 @@
-{"name":"ember-vfx-studio","version":"1.0.0","private":true,"scripts":{"start":"node server.cjs","check":"node --check dist/app.js"}}
+{
+  "name": "ember-vfx-studio",
+  "version": "1.10.3",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "package": "node scripts/build-3d.cjs && node scripts/build-docs.cjs && node scripts/package.cjs release-v1.2",
+    "check": "node --check dist/app.js && node --check dist/viewport3d.js && node --check dist/layers.js && node --check dist/animation.js && node --check dist/animation-ui.js && node --check dist/user-presets.js && node --check dist/workflow.js && node --check dist/documentation.js && node --check desktop/main.cjs && node --test tests/*.test.cjs",
+    "build:3d": "node scripts/build-3d.cjs",
+    "build:docs": "node scripts/build-docs.cjs",
+    "push": "git push origin main"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "^44.7.0",
+    "esbuild": "^0.28.2"
+  },
+  "main": "desktop/main.cjs",
+  "description": "A friendly desktop particle creator with Unreal Niagara export",
+  "dependencies": {
+    "three": "^0.186.1"
+  }
+}

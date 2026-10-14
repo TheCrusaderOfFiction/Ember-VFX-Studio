@@ -1,0 +1,17 @@
+{
+  "format": "ember-vfx",
+  "version": 1,
+  "name": "Test_snow_burst",
+  "effect": {
+    "id": "snow",
+    "amount": 65,
+    "size": 3,
+    "speed": 48,
+    "spread": 65,
+    "life": 3,
+    "color": "#b6a0ff",
+    "mode": "burst",
+    "glow": true,
+    "trail": true
+  }
+}

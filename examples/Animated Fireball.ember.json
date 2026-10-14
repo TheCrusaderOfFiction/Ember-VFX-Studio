@@ -1,0 +1,217 @@
+{
+  "format": "ember-vfx",
+  "version": 2,
+  "name": "Animated fireball",
+  "effect": {
+    "amount": 120,
+    "size": 10,
+    "speed": 25,
+    "spread": 15,
+    "life": 1,
+    "mode": "continuous",
+    "glow": true,
+    "trail": true,
+    "shape": "point",
+    "sprite": "soft",
+    "gravity": 0,
+    "turbulence": 12,
+    "endSize": 1,
+    "endOpacity": 0,
+    "bounce": false,
+    "positionX": 0,
+    "positionY": 0,
+    "positionZ": 120,
+    "id": "fire",
+    "name": "Campfire",
+    "group": "nature",
+    "symbol": "♨",
+    "color": "#ffb14c",
+    "tag": "NATURE · POINT",
+    "animation": {
+      "duration": 4,
+      "keys": [
+        {
+          "time": 1,
+          "property": "color",
+          "value": "#ff4b18",
+          "transition": "linear"
+        },
+        {
+          "time": 2.5,
+          "property": "emission",
+          "value": false,
+          "transition": "hold"
+        },
+        {
+          "time": 3,
+          "property": "opacity",
+          "value": 0,
+          "transition": "linear"
+        }
+      ],
+      "events": [
+        {
+          "time": 3,
+          "type": "clear"
+        }
+      ]
+    }
+  },
+  "layers": [
+    {
+      "name": "Flame core",
+      "enabled": true,
+      "effect": {
+        "amount": 120,
+        "size": 10,
+        "speed": 25,
+        "spread": 15,
+        "life": 1,
+        "mode": "continuous",
+        "glow": true,
+        "trail": true,
+        "shape": "point",
+        "sprite": "soft",
+        "gravity": 0,
+        "turbulence": 12,
+        "endSize": 1,
+        "endOpacity": 0,
+        "bounce": false,
+        "positionX": 0,
+        "positionY": 0,
+        "positionZ": 120,
+        "id": "fire",
+        "name": "Campfire",
+        "group": "nature",
+        "symbol": "♨",
+        "color": "#ffb14c",
+        "tag": "NATURE · POINT",
+        "animation": {
+          "duration": 4,
+          "keys": [
+            {
+              "time": 1,
+              "property": "color",
+              "value": "#ff4b18",
+              "transition": "linear"
+            },
+            {
+              "time": 2.5,
+              "property": "emission",
+              "value": false,
+              "transition": "hold"
+            },
+            {
+              "time": 3,
+              "property": "opacity",
+              "value": 0,
+              "transition": "linear"
+            }
+          ],
+          "events": [
+            {
+              "time": 3,
+              "type": "clear"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Sparks",
+      "enabled": true,
+      "effect": {
+        "amount": 50,
+        "size": 2,
+        "speed": 60,
+        "spread": 65,
+        "life": 1,
+        "mode": "continuous",
+        "glow": true,
+        "trail": true,
+        "shape": "point",
+        "sprite": "soft",
+        "gravity": -20,
+        "turbulence": 12,
+        "endSize": 1,
+        "endOpacity": 0,
+        "bounce": false,
+        "positionX": 0,
+        "positionY": 0,
+        "positionZ": 120,
+        "id": "ember",
+        "name": "Floating embers",
+        "group": "nature",
+        "symbol": "⁙",
+        "color": "#ffd872",
+        "tag": "NATURE · POINT",
+        "animation": {
+          "duration": 4,
+          "keys": [
+            {
+              "time": 0,
+              "property": "emission",
+              "value": false,
+              "transition": "hold"
+            }
+          ],
+          "events": [
+            {
+              "time": 1.8,
+              "type": "burst",
+              "count": 150
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Impact ring",
+      "enabled": true,
+      "effect": {
+        "amount": 200,
+        "size": 3,
+        "speed": 90,
+        "spread": 30,
+        "life": 1,
+        "mode": "burst",
+        "glow": true,
+        "trail": true,
+        "shape": "ring",
+        "sprite": "soft",
+        "gravity": 0,
+        "turbulence": 0,
+        "endSize": 1,
+        "endOpacity": 0,
+        "bounce": false,
+        "positionX": 0,
+        "positionY": 0,
+        "positionZ": 120,
+        "id": "shockwave",
+        "name": "Shockwave",
+        "group": "energy",
+        "symbol": "⊙",
+        "color": "#91d9ff",
+        "tag": "ENERGY · RING",
+        "animation": {
+          "duration": 4,
+          "keys": [
+            {
+              "time": 0,
+              "property": "emission",
+              "value": false,
+              "transition": "hold"
+            }
+          ],
+          "events": [
+            {
+              "time": 1.8,
+              "type": "burst",
+              "count": 200
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

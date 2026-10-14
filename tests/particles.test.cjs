@@ -1,0 +1,7 @@
+const {test}=require('node:test'),assert=require('node:assert/strict');const {spawn,step}=require('../dist/particles.js');
+const settings=id=>({id,amount:65,size:3,speed:48,spread:65,life:3});
+function seeded(){let seed=12345;return()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}}
+test('every preset creates finite particles with depth and lifetime',()=>{for(const id of ['cosmic','fire','magic','smoke','snow','ember']){const random=seeded(),ps=Array.from({length:100},()=>spawn(settings(id),random));for(const p of ps)for(const v of Object.values(p))assert.ok(Number.isFinite(v));assert.ok(Math.max(...ps.map(p=>p.y))-Math.min(...ps.map(p=>p.y))>1);for(const p of ps)assert.ok(p.life>=1.5&&p.life<=3);}});
+test('snow descends while fire and smoke rise',()=>{for(const id of ['snow','fire','smoke']){const s=settings(id),p=spawn(s,seeded()),z=p.z;assert.equal(step(p,.1,s),true);assert.ok(id==='snow'?p.z<z:p.z>z);}});
+test('portal particles form a vertical ring with depth',()=>{const s=settings('magic'),random=seeded();for(let i=0;i<100;i++){const p=spawn(s,random);assert.ok(Math.abs(Math.hypot(p.x,p.z-125)-(30+s.spread/100*95))<1e-6);assert.ok(Math.abs(p.y)<=6);}});
+test('expired particles are removed and a zero step preserves positions',()=>{const s=settings('cosmic'),p=spawn(s,seeded()),before={...p};assert.equal(step(p,0,s),true);assert.deepEqual(p,before);assert.equal(step(p,4,s),false);});
