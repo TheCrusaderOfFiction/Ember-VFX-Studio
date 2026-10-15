@@ -2,6 +2,38 @@
 
 Available inside the app through Documentation, F1, and the ? buttons beside controls.
 
+## Mesh emission, scene collisions and attachments
+
+Unreal integration
+
+Open Whole effect & Unreal scene. Read connected project assets lists static meshes, skeletal character meshes and levels from the connected Unreal project. Save and close that project before reading it. Choose a mesh surface to store a reference snapshot for Ember and Blender; native Niagara samples the actual asset. Skeletal emission uses animated character geometry when attached to a character mesh in Unreal. Allow CPU Access may need enabling on the mesh in Unreal for CPU surface sampling. Choose a level, actor and optional socket to make the whole effect follow it. Exports create a companion Blueprint under Content/Ember/Actors; place it in that level. Its Target Actor property lets you choose a different actor in Unreal. The Ember runtime plugin is required for this companion actor. Level inventory includes loaded actors in the persistent level, not unloaded World Partition cells. Scene collisions use Unreal geometry: CPU traces or GPU screen-depth queries. GPU depth collisions depend on visible scene depth. Ember and Blender retain the saved reference surface and analytic obstacles; they do not simulate an Unreal level. Ring-locked motion cannot use mesh emission or scene collisions.
+
+Try this: Choose a character mesh and hand socket, export, and place the companion actor in your Unreal level.
+
+## Whole-effect intensity, scale and tint
+
+Appearance
+
+Whole effect controls adjust all current layers together and are retained when you add or apply presets. Intensity multiplies new particle emission; zero stops new source particles. Scale enlarges positions, sizes and trails around the effect origin without changing lifetime. Tint multiplies existing particle and gradient colors; white preserves them. Reset whole-effect controls restores 1× intensity, 1× scale and white tint. Projects and recovery preserve these controls. Presets store them, but applying preset layers keeps the current whole-effect controls and attachment so other layers stay unchanged. Niagara exports include User.EmberIntensity, User.EmberScale and User.EmberColor controls. Initial and scheduled burst counts are baked using the chosen intensity; continuous emission follows the exposed intensity. Blender bakes the authored values.
+
+Try this: Try Scale 2× and a pale blue tint on an effect with several layers.
+
+## GPU particle simulation
+
+Unreal integration
+
+Choose GPU under Whole effect & Unreal scene for the selected layer. Set GPU particle amount from 5 to 100,000. Continuous flow uses this amount per second; Burst emits twice this amount initially. Niagara runs this layer on the graphics card with fixed effect-local bounds. Ember previews at most 2,000 particles per second and 16,000 source particles; Blender bakes that preview rather than running Niagara GPU simulation. Event response rules require CPU mode, so remove them before selecting GPU. GPU scene collisions use scene depth and depend on visible geometry. Adjust fixed bounds in Unreal for effects that travel beyond the generated bounds. A fast GPU can handle more particles, but the actual limit depends on effects, materials and hardware.
+
+Try this: Try 5,000 GPU particles per second before increasing the count.
+
+## Use a preset or layer as an event response
+
+Animation
+
+In Particle event rules, choose a preset or layer in Custom response source. Built-in presets, example presets, personal presets and current particle layers are available. Ember copies that layer’s particle shape, renderer, forces and lifetime curves, then lets you adjust response count, color, size, speed, lifetime, Glow and Trail. The response starts at the source particle’s first contact or death position and uses its own local motion. Its original layer timeline, scene attachment, surface binding and nested event rules are excluded. Each event creates a fixed burst; it does not recursively emit other responses. Imported mesh responses need their cached mesh files, just like mesh particle layers. Native Niagara uses CPU event handlers; Blender bakes separate response layers.
+
+Try this: Use a ribbon preset as a collision response, then give it a longer lifetime.
+
 ## Example presets
 
 Getting started
@@ -14,7 +46,7 @@ Try this: Open Examples, then add Impact responses to your effect.
 
 Animation
 
-Open Particle event rules. On first collision creates one response burst at the first contact of each source particle with its enabled floor, sphere or box. Enable Collide with a surface and choose movement other than locked ring orbit. On death responds when a particle reaches its lifetime or is removed by collision. Clear timeline events, Restart, and deleting a layer do not create death responses. Choose Sparks, Smoke or Explosion, then adjust particles per event (1–32), size, speed, lifetime, color, Glow and Trail. Responses inherit the source anime look, have their own motion and lifetime, and do not recursively trigger rules. Changing a rule restarts the selected layer. Burst layers with rules play once; Restart replays them. The preview limits each response pool to 4,000 particles; native Niagara processes up to 128 events per frame per rule. These are effect-local analytic collisions, not arbitrary Unreal scene collisions. Niagara exports create CPU event generators and response emitters; Blender bakes the response particles as separate layers. Rules are saved in projects, presets and recovery.
+Open Particle event rules. On first collision creates one response burst at the first contact of each source particle with its enabled floor, sphere or box. Enable Collide with a surface and choose movement other than locked ring orbit. On death responds when a particle reaches its lifetime or is removed by collision. Clear timeline events, Restart, and deleting a layer do not create death responses. Choose Sparks, Smoke or Explosion, or pick your own preset or layer below, then adjust particles per event (1–32), size, speed, lifetime, color, Glow and Trail. Responses inherit the source anime look, have their own motion and lifetime, and do not recursively trigger rules. Changing a rule restarts the selected layer. Burst layers with rules play once; Restart replays them. The preview limits each response pool to 4,000 particles; native Niagara processes up to 128 events per frame per rule. These are effect-local analytic collisions, not arbitrary Unreal scene collisions. Niagara exports create CPU event generators and response emitters; Blender bakes the response particles as separate layers. Rules are saved in projects, presets and recovery.
 
 Try this: Load Impact responses from Examples to create sparks and smoke when falling particles hit the floor.
 

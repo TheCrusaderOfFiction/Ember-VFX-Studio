@@ -1,4 +1,5 @@
 #include "EmberWorkspace.h"
+#include "EmberScene.h"
 #include "NiagaraSystem.h"
 #include "NiagaraEmitter.h"
 #include "NiagaraParameterStore.h"
@@ -37,7 +38,7 @@ bool EmberWorkspace(const FString& RequestFile,const FString& OutputFile,FString
  if(!FFileHelper::LoadFileToString(Text,*RequestFile)||Text.Len()>1024*1024||!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Request)){Error=TEXT("Invalid workspace request");return false;}
  FString Action;if(!Request->TryGetStringField(TEXT("action"),Action)){Error=TEXT("Missing workspace action");return false;}
  TSharedPtr<FJsonObject> Result=MakeShared<FJsonObject>();
- if(Action==TEXT("list")){
+ if(Action==TEXT("assets")||Action==TEXT("surface")||Action==TEXT("scene")){if(!EmberSceneWorkspace(Request,Result,Error))return false;}else if(Action==TEXT("list")){
   auto& Registry=FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry")).Get();Registry.SearchAllAssets(true);
   FARFilter Filter;Filter.ClassPaths.Add(UNiagaraSystem::StaticClass()->GetClassPathName());Filter.PackagePaths.Add(TEXT("/Game"));Filter.bRecursivePaths=true;TArray<FAssetData> Assets;Registry.GetAssets(Filter,Assets);
   TArray<TSharedPtr<FJsonValue>> Items;for(const auto& A:Assets){auto Item=MakeShared<FJsonObject>();Item->SetStringField(TEXT("name"),A.AssetName.ToString());Item->SetStringField(TEXT("asset"),A.GetSoftObjectPath().ToString());Items.Add(MakeShared<FJsonValueObject>(Item));}Result->SetArrayField(TEXT("systems"),Items);

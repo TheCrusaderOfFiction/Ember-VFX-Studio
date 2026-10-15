@@ -2,6 +2,7 @@
 #include "EmberImporter.h"
 #include "EmberMeshTransfer.h"
 #include "EmberWorkspace.h"
+#include "EmberSceneValidation.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Parse.h"
 #include "Engine/World.h"
@@ -160,6 +161,7 @@ bool VerifyTimeline(const FString& Asset,bool Orbit=false,bool Stretch=false,boo
 }
 UEmberImportCommandlet::UEmberImportCommandlet() { IsClient=false; IsServer=false; IsEditor=true; LogToConsole=true; }
 int32 UEmberImportCommandlet::Main(const FString& Params) {
+    FString SceneFolder,SceneError;if(FParse::Value(*Params,TEXT("VerifySceneSuite="),SceneFolder)){if(!EmberVerifySceneSuite(SceneFolder,SceneError)){UE_LOG(LogTemp,Error,TEXT("EMBER_SCENE_SUITE_FAILED %s"),*SceneError);return 1;}return 0;}
     FString Workspace,WorkspaceOutput,WorkspaceError;
     if(FParse::Value(*Params,TEXT("Workspace="),Workspace)){if(!FParse::Value(*Params,TEXT("WorkspaceOutput="),WorkspaceOutput)||!EmberWorkspace(Workspace,WorkspaceOutput,WorkspaceError)){UE_LOG(LogTemp,Error,TEXT("EMBER_WORKSPACE_FAILED %s"),*WorkspaceError);return 1;}UE_LOG(LogTemp,Display,TEXT("EMBER_WORKSPACE_SUCCESS"));return 0;}
     FString File, Asset, Error,MeshFile,MeshAsset,MeshOutput;

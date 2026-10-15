@@ -1,6 +1,7 @@
 #include "EmberImporter.h"
 #include "EmberAnimation.h"
 #include "EmberAdvanced.h"
+#include "EmberScene.h"
 #include "Misc/FileHelper.h"
 #include "Misc/PackageName.h"
 #include "Serialization/JsonReader.h"
@@ -42,7 +43,7 @@ bool ReadNumber(const TSharedPtr<FJsonObject>& Obj,const TCHAR* Key,double Min,d
 }
 bool FEmberImporter::Import(const FString& Filename,FString& AssetPath,FString& Error) {
     FString Text;TSharedPtr<FJsonObject> Root;
-    if(!FFileHelper::LoadFileToString(Text,*Filename)||Text.Len()>8*1024*1024||!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Root)||!Root.IsValid()){Error=TEXT("Invalid project file.");return false;}
+    if(!FFileHelper::LoadFileToString(Text,*Filename)||Text.Len()>16*1024*1024||!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Root)||!Root.IsValid()){Error=TEXT("Invalid project file.");return false;}
     FString Format,Name;double Version;const TSharedPtr<FJsonObject>* Effect;
     if(!Root->TryGetStringField(TEXT("format"),Format)||Format!=TEXT("ember-vfx")||!Root->TryGetNumberField(TEXT("version"),Version)||(Version!=1&&Version!=2)||!Root->TryGetStringField(TEXT("name"),Name)||Name.Len()>100||!Root->TryGetObjectField(TEXT("effect"),Effect)){Error=TEXT("Expected an Ember v1 project.");return false;}
     if(Version==2){
@@ -61,6 +62,7 @@ bool FEmberImporter::Import(const FString& Filename,FString& AssetPath,FString& 
             FString LayerName;Layer->TryGetStringField(TEXT("name"),LayerName);FString SafeLayer;for(TCHAR C:LayerName.Left(60))SafeLayer.AppendChar(FChar::IsAlnum(C)&&C<128?C:'_');if(SafeLayer.IsEmpty())SafeLayer=TEXT("Layer");SafeLayer+=FString::Printf(TEXT("_%d"),++Enabled);
             if(!EmberAddLayer(System,*Settings,SafeLayer,Error))return false;
         }
+        for(const auto& Value:*Layers){const auto Layer=Value->AsObject();const auto Settings=Layer->GetObjectField(TEXT("effect"));if(Layer->GetBoolField(TEXT("enabled"))&&Settings->HasField(TEXT("attachment"))){if(!EmberCreateSceneActor(System,Settings,Error))return false;break;}}
         if(!Enabled){Error=TEXT("Enable at least one particle layer before exporting.");return false;}
         System->RequestCompile(false);System->WaitForCompilationComplete();TArray<UNiagaraScript*> Scripts={System->GetSystemSpawnScript(),System->GetSystemUpdateScript()};for(const auto& Handle:System->GetEmitterHandles()){auto* Data=Handle.GetEmitterData();Scripts.Add(Data->SpawnScriptProps.Script);Scripts.Add(Data->UpdateScriptProps.Script);for(const auto& Event:Data->GetEventHandlers())Scripts.Add(Event.Script);}
         for(auto* Script:Scripts){const auto Status=Script->GetLastCompileStatus();if(Status!=ENiagaraScriptCompileStatus::NCS_UpToDate&&Status!=ENiagaraScriptCompileStatus::NCS_UpToDateWithWarnings){Error=Script->GetVMExecutableData().ErrorMsg;for(const auto& Event:Script->GetVMExecutableData().LastCompileEvents){Error+=Event.Message+TEXT("\n");}UE_LOG(LogTemp,Error,TEXT("EMBER_COMPILE %s"),*Error);return false;}}

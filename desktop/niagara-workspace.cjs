@@ -2,8 +2,8 @@ const fs=require('node:fs/promises'),path=require('node:path'),{randomUUID}=requ
 const assetPattern=/^\/Game\/[A-Za-z0-9_/]+\.[A-Za-z0-9_]+$/;
 function decodeResult(buffer){return JSON.parse((buffer[0]===0xff&&buffer[1]===0xfe?buffer.subarray(2).toString('utf16le'):buffer.toString('utf8')).replace(/^\uFEFF/,''));}
 function validateRequest(request){
- if(!request||!['list','inspect','copy'].includes(request.action))throw Error('Unknown editor action.');
- if(request.action!=='list'&&(!assetPattern.test(request.asset)||request.asset.length>1024))throw Error('Choose a Niagara system from your project.');
+ if(!request||!['list','inspect','copy','assets','surface','scene'].includes(request.action))throw Error('Unknown editor action.');
+ if(!['list','assets'].includes(request.action)&&(!assetPattern.test(request.asset)||request.asset.length>1024))throw Error('Choose a Niagara system from your project.');
  if(request.action==='copy'){
   if(typeof request.name!=='string'||! /^[A-Za-z0-9_]{1,80}$/.test(request.name))throw Error('Use letters, numbers and underscores for the copy name.');
   if(!request.values||Array.isArray(request.values)||typeof request.values!=='object'||Object.keys(request.values).length>256)throw Error('Invalid parameter changes.');

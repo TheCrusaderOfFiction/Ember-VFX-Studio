@@ -11,6 +11,7 @@
     if(settings.id==='cosmic'&&shape==='point'){vx=Math.cos(a)*planar*speed*r*2;vy=Math.sin(a)*planar*speed*r*2;vz=u*speed*r*2+20;z=70;}
     if(['snow','rain','leaves','petals'].includes(settings.id)){vz=-speed*2;vx*=.3;vy*=.3;}
     if(settings.id==='smoke'){vx*=.35;vy*=.35;vz=speed*(.7+random()*.5);}
+
     if(settings.motion==='aimed'){const yaw=(settings.velocityYaw||0)*Math.PI/180,pitch=(settings.velocityPitch||0)*Math.PI/180;vx=speed*Math.cos(pitch)*Math.cos(yaw);vy=speed*Math.cos(pitch)*Math.sin(yaw);vz=speed*Math.sin(pitch);}
     if(settings.motion==='orbit'){const radius=30+r*95,omega=(settings.ringSpin??90)*Math.PI/180;x=Math.cos(a)*radius;y=Math.sin(a)*radius;z=8;vx=-y*omega;vy=x*omega;vz=0;}
     if(shape==='ring'||settings.motion==='orbit'){const factor=1+(random()*2-1)*(settings.radiusVariation||0)/100;x*=factor;if(settings.motion!=='orbit'&&settings.id==='magic'){z=125+(z-125)*factor;}else y*=factor;}
@@ -21,6 +22,7 @@
     const spinJitter=random()*2-1,rotation=(random()*2-1)*(settings.spriteRotationRandom||0)*Math.PI/180;
     if(settings.motion!=='orbit'&&(settings.directionRandom||0)>0){const yaw=(random()*2-1)*settings.directionRandom*Math.PI/180,pitch=(random()*2-1)*settings.directionRandom*Math.PI/180;const px=vx*Math.cos(pitch)-vz*Math.sin(pitch),pz=vx*Math.sin(pitch)+vz*Math.cos(pitch);vx=px*Math.cos(yaw)-vy*Math.sin(yaw);vy=px*Math.sin(yaw)+vy*Math.cos(yaw);vz=pz;}
     if(settings.motion==='orbit'){const omega=(settings.ringSpin??90)*(1+spinJitter*(settings.spinVariation||0)/100)*Math.PI/180;vx=-y*omega*sx/sy;vy=x*omega*sy/sx;vz=0;}
+    if(settings.surface?.points?.length){const point=settings.surface.points[Math.min(settings.surface.points.length-1,Math.floor(random()*settings.surface.points.length))];x=point[0];y=point[1];z=point[2];}
     x+=settings.positionX||0;y+=settings.positionY||0;z+=settings.positionZ||0;
     return {rotation,spinJitter,orbitScaleX:sx,orbitScaleY:sy,orbitZ:z-(settings.positionZ||0),orbitCx:settings.positionX||0,orbitCy:settings.positionY||0,x,y,z,vx,vy,vz,age:0,life:settings.life*(.5+random()*.5),size:settings.size*(.4+random()*.8),seed:random()*Math.PI*2};
   }
