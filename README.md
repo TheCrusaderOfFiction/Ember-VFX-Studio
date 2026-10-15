@@ -1,6 +1,14 @@
-# Ember VFX Studio — current desktop release (1.17)
+# Ember VFX Studio — current desktop release (1.18)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
+
+## Curves, textures and ribbons
+
+- **Lifetime curves & color gradient** edits two to eight stops for particle size, opacity and color, from birth to death. Grow & dissolve and Hot spark gradient provide starting points.
+- **Particle textures & flipbooks** imports a PNG or animation sheet, with rows, columns, frame rate and looping. Images are embedded in projects and presets; use PNGs up to 2048 × 2048 and 256 KB.
+- **Curved ribbons** connects a layer’s particles in birth order, with width and age taper. Add flowing ribbon creates a separate example layer. Particle lifetime controls stream length; this is separate from straight velocity streak length.
+
+All three work in the 3D preview and export to Unreal 5.6/5.8 and Blender. Niagara uses native ribbon renderers and saved texture/material assets. Blender saves animated mesh frames and packed images; textured planes and ribbons use a fixed viewing direction, so they do not rotate to follow a moved Blender camera. These additions are the first stage of the Niagara roadmap. Event-driven layers, visual motion paths and attachments, character surface emission, scene collisions and builder GPU simulation remain to be implemented.
 
 ## Native Niagara editor workspace
 

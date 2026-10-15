@@ -42,7 +42,7 @@ bool ReadNumber(const TSharedPtr<FJsonObject>& Obj,const TCHAR* Key,double Min,d
 }
 bool FEmberImporter::Import(const FString& Filename,FString& AssetPath,FString& Error) {
     FString Text;TSharedPtr<FJsonObject> Root;
-    if(!FFileHelper::LoadFileToString(Text,*Filename)||Text.Len()>1024*1024||!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Root)||!Root.IsValid()){Error=TEXT("Invalid project file.");return false;}
+    if(!FFileHelper::LoadFileToString(Text,*Filename)||Text.Len()>8*1024*1024||!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Root)||!Root.IsValid()){Error=TEXT("Invalid project file.");return false;}
     FString Format,Name;double Version;const TSharedPtr<FJsonObject>* Effect;
     if(!Root->TryGetStringField(TEXT("format"),Format)||Format!=TEXT("ember-vfx")||!Root->TryGetNumberField(TEXT("version"),Version)||(Version!=1&&Version!=2)||!Root->TryGetStringField(TEXT("name"),Name)||Name.Len()>100||!Root->TryGetObjectField(TEXT("effect"),Effect)){Error=TEXT("Expected an Ember v1 project.");return false;}
     if(Version==2){

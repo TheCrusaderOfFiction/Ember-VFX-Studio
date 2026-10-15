@@ -2,6 +2,30 @@
 
 Available inside the app through Documentation, F1, and the ? buttons beside controls.
 
+## Particle PNG textures and flipbooks
+
+Appearance
+
+Open Particle textures & flipbooks and import a PNG up to 2048 by 2048 pixels and 256 KB. Transparent images work best. A single image uses one row and one column. For an animation sheet, enter its columns and rows; frames read left to right then top to bottom. Set Frames per second and Loop animation. Without looping, playback holds on the last frame. Every particle starts at frame zero when it is born. Texture replaces the sprite shape and is tinted by particle color and lifetime gradients. Glow brightens the texture; anime mode quantizes texture shading. Imported textures select sprite rendering; mesh particles retain their mesh appearance. Remove texture restores procedural sprites. Images are embedded in saved projects and presets and exported as texture assets to Niagara. Blender bakes textured planes using a fixed viewing direction; they do not follow a moved Blender camera. Connected ribbons keep their own strip material.
+
+Try this: Use a 4 by 4 smoke sheet at 12 frames per second and turn looping off.
+
+## Connected curved ribbons
+
+Appearance
+
+Open Curved ribbons and choose Connected ribbon. This enables trails and joins live particles of the layer in birth order into a camera-facing strip. Ribbon width is measured in centimeters; Taper toward older particles shrinks the strip as particles age. Each layer has its own ribbon. Use continuous emission, a narrow point and low direction randomness for smooth curves. Lifetime sets the visible stream length; Straight streaks still uses Trail length instead. Lifetime opacity and color gradients also shade the ribbon. The flowing-ribbon example adds a new layer. Exports use a native Niagara ribbon renderer, while Blender bakes ribbon geometry using a fixed viewing direction. A ribbon joins particles; it does not record a separate historical trail behind every particle.
+
+Try this: Add flowing ribbon, then change wind to bend it.
+
+## Lifetime curves and color gradients
+
+Animation
+
+Open Lifetime curves & color gradient and choose Size multiplier, Opacity or Color gradient. Enable Use this curve to edit up to eight stops from birth (0 percent) to death (100 percent). Interior stop ages and values are editable; Remove deletes a middle stop, and Add stop divides the largest gap. Size multiplies particle size from 0 to 5. Opacity is absolute from 0 to 1, then multiplied by the layer opacity. Color gradients blend in linear color space. Enabled curves replace the matching end-size, end-opacity or two-color lifetime fade. Curves apply separately to each particle based on its age, while the layer timeline continues to animate global properties. Projects and presets preserve curves. Sprite and mesh preview, Blender baking and Niagara exports use the curves.
+
+Try this: Try Grow & dissolve with smoke, or Hot spark gradient on sparks.
+
 ## Sphere and box collision obstacles
 
 Dynamics

@@ -1,5 +1,5 @@
 """Ember's headless Blender bridge. All paths arrive through a JSON job file."""
-import bpy, json, sys, math
+import bpy, json, sys, math, base64, tempfile, os
 from pathlib import Path
 from mathutils import Vector, Matrix
 
@@ -24,9 +24,19 @@ def material(name, glow, effect=None):
         ink=nodes.new('ShaderNodeMixRGB');ink.inputs[2].default_value=(.008,.01,.018,1);links.new(rim.outputs[0],ink.inputs[0]);links.new(shade.outputs[0],ink.inputs[1]);source=ink.outputs[0]
         shader.inputs['Specular IOR Level'].default_value=0
         links.new(source,shader.inputs['Emission Color']);shader.inputs['Emission Strength'].default_value=1
+    if effect and effect.get('flipbook'):
+        links=mat.node_tree.links;texture=nodes.new('ShaderNodeTexImage')
+        with tempfile.NamedTemporaryFile(suffix='.png',delete=False) as temporary:
+            temporary.write(base64.b64decode(effect['flipbook']['image'].split(',',1)[1]));filename=temporary.name
+        try:
+            texture.image=bpy.data.images.load(filename,check_existing=False);texture.image.pack()
+        finally:os.unlink(filename)
+        multiply=nodes.new('ShaderNodeMixRGB');multiply.blend_type='MULTIPLY';multiply.inputs[0].default_value=1;links.new(source,multiply.inputs[1]);links.new(texture.outputs['Color'],multiply.inputs[2]);source=multiply.outputs[0]
+        alpha=nodes.new('ShaderNodeMath');alpha.operation='MULTIPLY';links.new(color.outputs['Alpha'],alpha.inputs[0]);links.new(texture.outputs['Alpha'],alpha.inputs[1]);links.new(alpha.outputs[0],shader.inputs['Alpha'])
+        links.new(source,shader.inputs['Emission Color']);shader.inputs['Emission Strength'].default_value=3 if glow else 0
     mat.node_tree.links.new(source,shader.inputs['Base Color'])
-    mat.node_tree.links.new(color.outputs['Alpha'],shader.inputs['Alpha'])
-    if glow and not (effect and effect.get('anime',False)):
+    if not (effect and effect.get('flipbook')):mat.node_tree.links.new(color.outputs['Alpha'],shader.inputs['Alpha'])
+    if glow and not (effect and (effect.get('anime',False) or effect.get('flipbook'))):
         mat.node_tree.links.new(color.outputs['Color'],shader.inputs['Emission Color']);shader.inputs['Emission Strength'].default_value=3
     shader.inputs['Roughness'].default_value=.65
     mat.node_tree.links.new(shader.outputs['BSDF'],out.inputs['Surface'])
@@ -67,11 +77,36 @@ def frame_object(collection,name,points,frame,group,trail=False):
     for attribute,values in [('ember_scale',scales),('ember_rotation',rotations)]:mesh.attributes.new(attribute,'FLOAT_VECTOR','POINT').data.foreach_set('vector',[number for value in values for number in value])
     mesh.color_attributes.new(name='ember_color',type='FLOAT_COLOR',domain='POINT').data.foreach_set('color',colors)
     obj=bpy.data.objects.new(name,mesh);collection.objects.link(obj);modifier=obj.modifiers.new('Ember particles','NODES');modifier.node_group=group
+    animate_frame(obj,frame)
+    return obj
+
+def animate_frame(obj,frame):
     # The frame meshes and visibility animation are saved in the .blend file;
     # no runtime handler or automatic Python execution is needed to replay them.
     for time,hidden in [(0,True),(frame,False),(frame+1,True)]:
         obj.hide_viewport=hidden;obj.hide_render=hidden;obj.keyframe_insert(data_path='hide_viewport',frame=time);obj.keyframe_insert(data_path='hide_render',frame=time)
-    return obj
+
+def ribbon_object(collection,name,points,frame,mat,effect):
+    vertices=[];faces=[];colors=[]
+    for index,p in enumerate(points):
+        before=Vector(points[max(0,index-1)][:3]);after=Vector(points[min(len(points)-1,index+1)][:3]);side=(after-before).cross(Vector((0,-1,.5)))
+        if side.length<1e-8:side=Vector((1,0,0))
+        side.normalize();side*=p[12]*.5;center=Vector(p[:3]);vertices.extend([center-side,center+side]);colors.extend(p[5:9]*2)
+        if index:faces.append((index*2-2,index*2-1,index*2+1,index*2))
+    mesh=bpy.data.meshes.new(name);mesh.from_pydata(vertices,[],faces);mesh.update();mesh.materials.append(mat)
+    mesh.color_attributes.new(name='ember_color',type='FLOAT_COLOR',domain='POINT').data.foreach_set('color',colors)
+    obj=bpy.data.objects.new(name,mesh);collection.objects.link(obj);animate_frame(obj,frame);return obj
+
+def flipbook_object(collection,name,points,frame,mat,effect):
+    vertices=[];faces=[];colors=[];uvs=[];f=effect['flipbook'];right=Vector((1,0,0));up=Vector((0,.4472136,.8944272))
+    for index,p in enumerate(points):
+        center=Vector(p[:3]);size=p[3];angle=p[4];r=right*math.cos(angle)+up*math.sin(angle);u=up*math.cos(angle)-right*math.sin(angle);col=int(p[13])%f['columns'];row=int(p[13])//f['columns']
+        for x,y in [(-1,-1),(1,-1),(1,1),(-1,1)]:
+            vertices.append(center+(r*x+u*y)*size);colors.extend(p[5:9]);uvs.append(((col+(x+1)*.5)/f['columns'],(f['rows']-1-row+(y+1)*.5)/f['rows']))
+        faces.append(tuple(index*4+i for i in range(4)))
+    mesh=bpy.data.meshes.new(name);mesh.from_pydata(vertices,[],faces);mesh.update();mesh.materials.append(mat);mesh.color_attributes.new(name='ember_color',type='FLOAT_COLOR',domain='POINT').data.foreach_set('color',colors);uv=mesh.uv_layers.new(name='UVMap')
+    for loop in mesh.loops:uv.data[loop.index].uv=uvs[loop.vertex_index]
+    obj=bpy.data.objects.new(name,mesh);collection.objects.link(obj);animate_frame(obj,frame);return obj
 
 def export_effect(job):
     clean_scene();data=json.loads(Path(job['bake']).read_text(encoding='utf8'));scene=bpy.context.scene;scene.render.fps=data['fps'];scene.frame_start=1;scene.frame_end=len(data['layers'][0]['frames'])
@@ -84,9 +119,13 @@ def export_effect(job):
         if extent<=0:raise ValueError('Particle mesh has no dimensions.')
         obj.data.transform(Matrix.Scale(2/extent,4) @ Matrix.Translation(-center));obj.name='Ember source mesh '+reference[:8];obj.hide_render=True;obj.hide_set(True);templates[reference]=obj
     for layer in data['layers']:
-        collection=bpy.data.collections.new(layer['name']);scene.collection.children.link(collection);mat=material('Ember '+layer['name'],layer['effect']['glow'],layer['effect']);head=node_group('Ember '+layer['name'],mat,layer['effect']['sprite'],mesh_object=templates.get(layer['effect'].get('meshRef')));tail=node_group('Ember trail '+layer['name'],mat,trail=True) if layer['effect']['trail'] else None
+        collection=bpy.data.collections.new(layer['name']);scene.collection.children.link(collection);mat=material('Ember '+layer['name'],layer['effect']['glow'],{key:value for key,value in layer['effect'].items() if key!='flipbook' or layer['effect'].get('renderer')!='mesh'});head=node_group('Ember '+layer['name'],mat,layer['effect']['sprite'],mesh_object=templates.get(layer['effect'].get('meshRef')));tail=node_group('Ember trail '+layer['name'],mat,trail=True) if layer['effect']['trail'] and layer['effect'].get('trailMode')!='ribbon' else None
+        strip_effect={key:value for key,value in layer['effect'].items() if key!='flipbook'};strip_mat=material('Ember strip '+layer['name'],strip_effect['glow'],strip_effect) if layer['effect'].get('flipbook') else mat
+        if tail:tail=node_group('Ember plain trail '+layer['name'],strip_mat,trail=True)
         for index,points in enumerate(layer['frames']):
-            frame_object(collection,'Ember '+layer['name']+' '+str(index+1),points,index+1,head)
+            if layer['effect'].get('flipbook') and layer['effect'].get('renderer')!='mesh':flipbook_object(collection,'Ember texture '+layer['name']+' '+str(index+1),points,index+1,mat,layer['effect'])
+            else:frame_object(collection,'Ember '+layer['name']+' '+str(index+1),points,index+1,head)
+            if layer['effect']['trail'] and layer['effect'].get('trailMode')=='ribbon':ribbon_object(collection,'Ember ribbon '+layer['name']+' '+str(index+1),points,index+1,strip_mat,layer['effect'])
             if tail:frame_object(collection,'Ember trail '+layer['name']+' '+str(index+1),points,index+1,tail,True)
     text=bpy.data.texts.new('Ember Original Project.json');text.write(json.dumps(data['project'],indent=2));scene['ember_bake']=True;scene['ember_units']='meters';scene.frame_set(min(2,scene.frame_end));bpy.ops.wm.save_as_mainfile(filepath=job['output'])
 

@@ -15,6 +15,7 @@
 #include "NiagaraDataSetAccessor.h"
 #include "NiagaraSpriteRendererProperties.h"
 #include "NiagaraMeshRendererProperties.h"
+#include "NiagaraRibbonRendererProperties.h"
 #include "NiagaraParameterStore.h"
 #include "Misc/PackageName.h"
 #include "UObject/SavePackage.h"
@@ -38,6 +39,23 @@ bool VerifyDynamics(const FString& Asset){
   UE_LOG(LogTemp,Display,TEXT("EMBER_DYNAMICS_SAMPLE %d count=%d velocity=(%f,%f,%f)"),E,Count,Vel.Get(0).X,Vel.Get(0).Y,Vel.Get(0).Z);
  }
  Component->DestroyComponent();GEngine->DestroyWorldContext(World);World->DestroyWorld(false);if(Valid)UE_LOG(LogTemp,Display,TEXT("EMBER_DYNAMICS_SUCCESS"));return Valid;
+}
+bool VerifyAuthoring(const FString& Asset){
+ auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);if(!System||!System->IsReadyToRun())return false;
+ auto* World=UWorld::CreateWorld(EWorldType::Game,false);GEngine->CreateNewWorldContext(EWorldType::Game).SetCurrentWorld(World);World->FXSystem=FFXSystemInterface::Create(World->GetFeatureLevel(),World->Scene);
+ auto* Component=NewObject<UNiagaraComponent>(World);Component->SetAutoActivate(false);Component->SetForceSolo(true);Component->SetAsset(System);Component->RegisterComponentWithWorld(World);Component->Activate(true);Component->AdvanceSimulation(30,1.0f/60.0f);
+ auto Controller=Component->GetSystemInstanceController();auto* Instance=Controller.IsValid()?Controller->GetSystemInstance_Unsafe():nullptr;bool Valid=Instance&&Instance->GetEmitters().Num()==2;
+ if(Valid)for(int32 E=0;E<2;E++){
+  auto& Emitter=Instance->GetEmitters()[E].Get();const auto& Data=Emitter.GetParticleData();const int32 Count=Emitter.GetNumParticles();if(Count!=100){Valid=false;continue;}
+  const auto Vel=FNiagaraDataSetAccessor<FVector3f>(Data,TEXT("Velocity")).GetReader(Data);const auto Pos=FNiagaraDataSetAccessor<FNiagaraPosition>(Data,TEXT("Position")).GetReader(Data);const auto Color=FNiagaraDataSetAccessor<FLinearColor>(Data,TEXT("Color")).GetReader(Data);const auto Rotation=FNiagaraDataSetAccessor<float>(Data,TEXT("SpriteRotation")).GetReader(Data);
+  if(!Vel.IsValid()||!Pos.IsValid()||!Color.IsValid()||!Rotation.IsValid()){Valid=false;continue;}
+  const auto Size=FNiagaraDataSetAccessor<FVector2f>(Data,TEXT("SpriteSize")).GetReader(Data);const auto Width=FNiagaraDataSetAccessor<float>(Data,TEXT("RibbonWidth")).GetReader(Data);const auto Frame=FNiagaraDataSetAccessor<FVector4f>(Data,TEXT("DynamicMaterialParameter")).GetReader(Data);
+  if(!Size.IsValid()||(E==0&&!Frame.IsValid())||(E==1&&!Width.IsValid())){Valid=false;continue;}
+  for(int32 I=0;I<Count;I++){const auto C=Color.Get(I);if(FMath::Abs(C.G-1)>.01||C.R>.01||C.B>.01||FMath::Abs(C.A-.4)>.01||FMath::Abs(Size.Get(I).X-12)>.01)Valid=false;if(E==0&&(Frame.Get(I).X<1||Frame.Get(I).X>3))Valid=false;if(E==1&&FMath::Abs(Width.Get(I)-6)>.01)Valid=false;}
+  if(E==1){bool Found=false;for(auto* Renderer:System->GetEmitterHandles()[E].GetEmitterData()->GetRenderers())Found|=Cast<UNiagaraRibbonRendererProperties>(Renderer)!=nullptr;Valid&=Found;}
+  UE_LOG(LogTemp,Display,TEXT("EMBER_AUTHORING_SAMPLE %d count=%d velocity=(%f,%f,%f)"),E,Count,Vel.Get(0).X,Vel.Get(0).Y,Vel.Get(0).Z);
+ }
+ Component->DestroyComponent();GEngine->DestroyWorldContext(World);World->DestroyWorld(false);if(Valid)UE_LOG(LogTemp,Display,TEXT("EMBER_AUTHORING_SUCCESS"));return Valid;
 }
 bool VerifyObstacles(const FString& Asset){
  auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);if(!System||!System->IsReadyToRun())return false;
@@ -132,15 +150,18 @@ int32 UEmberImportCommandlet::Main(const FString& Params) {
     FString File, Asset, Error,MeshFile,MeshAsset,MeshOutput;
     if(FParse::Value(*Params,TEXT("MeshImport="),MeshFile)){if(!EmberImportMesh(MeshFile,Asset,Error)){UE_LOG(LogTemp,Error,TEXT("EMBER_MESH_FAILED %s"),*Error);return 1;}UE_LOG(LogTemp,Display,TEXT("EMBER_MESH_IMPORT_SUCCESS %s"),*Asset);return 0;}
     if(FParse::Value(*Params,TEXT("MeshExport="),MeshAsset)){if(!FParse::Value(*Params,TEXT("MeshOutput="),MeshOutput)||!EmberExportMesh(MeshAsset,MeshOutput,Error)){UE_LOG(LogTemp,Error,TEXT("EMBER_MESH_FAILED %s"),*Error);return 1;}UE_LOG(LogTemp,Display,TEXT("EMBER_MESH_EXPORT_SUCCESS"));return 0;}
+    if(!FParse::Value(*Params,TEXT("VerifyExisting="),Asset)){
     if(!FParse::Value(*Params,TEXT("Effect="),File)){UE_LOG(LogTemp,Error,TEXT("Missing -Effect=<Ember JSON file>"));return 1;}
     if(!FEmberImporter::Import(File,Asset,Error)){UE_LOG(LogTemp,Error,TEXT("EMBER_IMPORT_FAILED %s"),*Error);return 1;}
+    }
     if(FParse::Param(*Params,TEXT("VerifyDynamics"))&&!VerifyDynamics(Asset))return 1;
+    if(FParse::Param(*Params,TEXT("VerifyAuthoring"))&&!VerifyAuthoring(Asset))return 1;
     if(FParse::Param(*Params,TEXT("VerifyObstacles"))&&!VerifyObstacles(Asset))return 1;
-    if(FParse::Param(*Params,TEXT("VerifyAnime"))){
+    if(FParse::Param(*Params,TEXT("VerifyAnime"))||FParse::Param(*Params,TEXT("VerifyAuthoring"))){
         auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);TArray<UMaterial*> Materials;
         for(const auto& Handle:System->GetEmitterHandles())for(auto* Renderer:Handle.GetEmitterData()->GetRenderers()){
-            UMaterial* Material=nullptr;if(auto* Sprite=Cast<UNiagaraSpriteRendererProperties>(Renderer))Material=Cast<UMaterial>(Sprite->Material);if(auto* Mesh=Cast<UNiagaraMeshRendererProperties>(Renderer))if(!Mesh->OverrideMaterials.IsEmpty())Material=Cast<UMaterial>(Mesh->OverrideMaterials[0].ExplicitMat);
-            if(!Material||Material->BlendMode!=BLEND_Translucent||!Cast<UMaterialExpressionCustom>(Material->GetEditorOnlyData()->EmissiveColor.Expression))return 1;
+            UMaterial* Material=nullptr;if(auto* Ribbon=Cast<UNiagaraRibbonRendererProperties>(Renderer))Material=Cast<UMaterial>(Ribbon->Material);if(auto* Sprite=Cast<UNiagaraSpriteRendererProperties>(Renderer))Material=Cast<UMaterial>(Sprite->Material);if(auto* Mesh=Cast<UNiagaraMeshRendererProperties>(Renderer))if(!Mesh->OverrideMaterials.IsEmpty())Material=Cast<UMaterial>(Mesh->OverrideMaterials[0].ExplicitMat);
+            if(!Material||Material->BlendMode!=BLEND_Translucent||(!FParse::Param(*Params,TEXT("VerifyAuthoring"))&&!Cast<UMaterialExpressionCustom>(Material->GetEditorOnlyData()->EmissiveColor.Expression)))return 1;
             Material->ForceRecompileForRendering();Materials.AddUnique(Material);
         }
 
@@ -151,7 +172,7 @@ int32 UEmberImportCommandlet::Main(const FString& Params) {
         auto* Resource=Material->GetMaterialResource(ERHIFeatureLevel::SM5);
 #endif
         if(Resource)Resource->FinishCompilation();if(!Resource||!Resource->GetCompileErrors().IsEmpty()||!Resource->HasValidGameThreadShaderMap()){UE_LOG(LogTemp,Error,TEXT("EMBER_ANIME_SHADER_INVALID %s resource=%d"),*Material->GetName(),Resource!=nullptr);if(Resource)for(const auto& Message:Resource->GetCompileErrors())UE_LOG(LogTemp,Error,TEXT("EMBER_ANIME_SHADER_ERROR %s"),*Message);return 1;}}
-        if(Materials.Num()<5)return 1;UE_LOG(LogTemp,Display,TEXT("EMBER_ANIME_SHADER_SUCCESS %d"),Materials.Num());
+        if(Materials.Num()<(FParse::Param(*Params,TEXT("VerifyAuthoring"))?3:5))return 1;UE_LOG(LogTemp,Display,TEXT("EMBER_ANIME_SHADER_SUCCESS %d"),Materials.Num());
     }
     if(FParse::Param(*Params,TEXT("VerifyWorkspaceFixture"))){
         auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);auto& Store=System->GetExposedParameters();
