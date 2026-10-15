@@ -2,6 +2,14 @@
 
 Available inside the app through Documentation, F1, and the ? buttons beside controls.
 
+## Emitter motion paths
+
+Animation
+
+Open Emitter motion path. Straight route, Arc route and Closed route create editable starting-position keys for the active layer. Other property keys and timed bursts or clears stay unchanged. Select a waypoint to edit its time and X/Y/Z offsets in centimeters. The first time stays at zero; later times must increase. Add waypoint inserts after the selected point. Remove deletes a middle or final point when at least two remain. Drag waypoints in preview enables 3D handles; select the X/Y, X/Z or Y/Z drag plane, then drag a handle. Hold Shift to snap to 5 centimeters. Change the camera or drag plane if viewing it edge-on. A purple line shows the route and a gold marker shows the current emitter center. Hide the grid to hide the guide unless drag mode is on. Routes use straight segments between points, play once, and hold their final position; Restart replays them. Existing emitted particles keep traveling independently, while locked ring motion carries existing orbits with its moving center. Lifetime controls visible trail duration; emission keys can stop new particles at the end. Remove path, keep start clears only position keys and retains the first waypoint as the static starting offset. Routes use three ordinary timeline keys per point, sharing the 64-key budget, up to 21 waypoints. Editing converts existing position keys into linear route segments. Projects, presets, Blender baking and Niagara exports already preserve these position keys. Add fireball path example adds a new layer.
+
+Try this: Add fireball path example, choose X/Z drag plane, and drag the middle waypoint upward.
+
 ## Particle PNG textures and flipbooks
 
 Appearance

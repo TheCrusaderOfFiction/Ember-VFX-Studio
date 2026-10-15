@@ -1,6 +1,12 @@
-# Ember VFX Studio — current desktop release (1.18.1)
+# Ember VFX Studio — current desktop release (1.19)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
+
+## Visual emitter motion paths
+
+Open **Emitter motion path** for straight, arc and closed routes. Edit waypoint times and position offsets, or enable **Drag waypoints in preview**, choose the X/Y, X/Z or Y/Z plane and drag the handles. Hold Shift to snap to 5 cm. The guide shows the route and current emitter center. **Add fireball path example** adds an independent layer. Routes use straight segments, play once and hold at the end. Restart replays them. Preset/aimed emission leaves older particles behind; locked ring motion carries its orbit with the center.
+
+Routes reuse ordinary position animation keys, so existing save, preset, Blender and Niagara workflows carry them. Editing a route replaces position keys only. Other properties and particle events stay. Each point uses three of the timeline’s 64 keys, with up to 21 waypoints. **Remove path, keep start** removes movement and keeps the first position.
 
 ## Curves, textures and ribbons
 
@@ -8,7 +14,7 @@ Open **release-v1.2/Ember-win32-x64/Ember.exe**.
 - **Particle textures & flipbooks** imports a PNG or animation sheet, with rows, columns, frame rate and looping. Images are embedded in projects and presets; use PNGs up to 2048 × 2048 and 256 KB.
 - **Curved ribbons** connects a layer’s particles in birth order, with width and age taper. Add flowing ribbon creates a separate example layer. Particle lifetime controls stream length; this is separate from straight velocity streak length.
 
-All three work in the 3D preview and export to Unreal 5.6/5.8 and Blender. Niagara uses native ribbon renderers and saved texture/material assets. Blender saves animated mesh frames and packed images; textured planes and ribbons use a fixed viewing direction, so they do not rotate to follow a moved Blender camera. These additions are the first stage of the Niagara roadmap. Event-driven layers, visual motion paths and attachments, character surface emission, scene collisions and builder GPU simulation remain to be implemented.
+All three work in the 3D preview and export to Unreal 5.6/5.8 and Blender. Niagara uses native ribbon renderers and saved texture/material assets. Blender saves animated mesh frames and packed images; textured planes and ribbons use a fixed viewing direction, so they do not rotate to follow a moved Blender camera. These additions are the first stage of the Niagara roadmap. Event-driven layers, Unreal actor attachments, character surface emission, scene collisions and builder GPU simulation remain to be implemented.
 
 ## Native Niagara editor workspace
 
