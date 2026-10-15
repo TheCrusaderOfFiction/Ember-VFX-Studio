@@ -23,7 +23,7 @@ list=()=>{
  for(const item of matches){
   const card=document.createElement('div');card.className='preset-card saved-preset-card';if(item.builtIn)card.dataset.exampleId=item.id;
   const use=document.createElement('button');use.className='preset saved-preset';use.title='Use on active layer';use.setAttribute('aria-label','Use preset '+item.name);
-  const thumb=document.createElement('span');thumb.className='thumb';thumb.textContent='✦';thumb.style.setProperty('--c',item.project.layers[0].effect.color);
+  const thumb=document.createElement('span');thumb.className='thumb';if(item.builtIn&&item.thumbnail){const image=document.createElement('img');image.className='example-preset-icon';image.src=item.thumbnail;image.alt='';image.width=38;image.height=38;image.draggable=false;thumb.append(image);}else thumb.textContent='✦';thumb.style.setProperty('--c',item.project.layers[0].effect.color);
   const text=document.createElement('span'),name=document.createElement('b'),tag=document.createElement('small');name.textContent=item.name;tag.textContent=(item.builtIn?'EXAMPLE PRESET · ':'MY PRESET · ')+item.project.layers.length+' '+(item.project.layers.length===1?'LAYER':'LAYERS');text.append(name,tag);use.append(thumb,text);
   use.onclick=()=>openPresetOnActiveLayer(item);
   const actions=document.createElement('div');actions.className='saved-preset-actions';

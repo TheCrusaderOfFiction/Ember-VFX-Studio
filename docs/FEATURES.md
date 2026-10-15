@@ -6,7 +6,7 @@ Available inside the app through Documentation, F1, and the ? buttons beside con
 
 Getting started
 
-Open Examples in the preset library. Impact responses, Fireball path, Flowing ribbon, Sphere deflection, Tornado, Black hole, Drifting smoke, Ricochet sparks, Spinning ring, Grow & dissolve and Hot spark gradient are built-in presets. Click a card to replace only the active layer. Add to effect creates a new layer alongside your existing particles. Search finds examples by name. These presets are available after reopening Ember and do not use your 100 personal preset slots. Edit one and choose Save as preset to keep your own version.
+Open Examples in the preset library. Impact responses, Fireball path, Flowing ribbon, Sphere deflection, Tornado, Black hole, Drifting smoke, Ricochet sparks, Spinning ring, Grow & dissolve and Hot spark gradient are built-in presets. Each has a distinct glowing illustrated icon matching the original library style. Click a card to replace only the active layer. Add to effect creates a new layer alongside your existing particles. Search finds examples by name. These presets are available after reopening Ember and do not use your 100 personal preset slots. Edit one and choose Save as preset to keep your own version.
 
 Try this: Open Examples, then add Impact responses to your effect.
 
