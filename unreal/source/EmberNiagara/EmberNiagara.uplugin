@@ -1,7 +1,7 @@
 {
   "FileVersion": 3,
-  "Version": 7,
-  "VersionName": "1.14.1",
+  "Version": 8,
+  "VersionName": "1.15.0",
   "FriendlyName": "Ember Niagara",
   "Description": "Import Ember particle projects as editable Niagara systems.",
   "Category": "FX",

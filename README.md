@@ -1,6 +1,14 @@
-# Ember VFX Studio — current desktop release (1.19)
+# Ember VFX Studio — current desktop release (1.20)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
+
+## Collision and death response bursts
+
+Open **Particle event rules**. Add **On first collision** or **On death**, choose Sparks, Smoke or Explosion, and set its count, size, speed, lifetime, color, Glow and Trail. Responses appear where the source particle hits or dies. **Add impact example** adds a separate layer without replacing your effect.
+
+Collision needs **Collide with a surface** enabled and works with the floor, sphere and box. Each source particle reports its first contact once; death also includes collision removal. Timeline Clear, Restart and layer deletion do not trigger responses. Responses inherit the source anime look and do not trigger more responses. Rules save in projects, presets and recovery. Burst layers with rules play once; use Restart to replay them.
+
+Unreal 5.6 and 5.8 exports use live CPU Niagara event generators and response emitters. Blender bakes response particles into separate layers. Preview response pools are limited to 4,000 particles each; Niagara handles up to 128 events per frame per rule. This first version offers preset-based response bursts, not arbitrary nested layer graphs or scene collision sampling.
 
 ## Visual emitter motion paths
 
@@ -14,7 +22,7 @@ Routes reuse ordinary position animation keys, so existing save, preset, Blender
 - **Particle textures & flipbooks** imports a PNG or animation sheet, with rows, columns, frame rate and looping. Images are embedded in projects and presets; use PNGs up to 2048 × 2048 and 256 KB.
 - **Curved ribbons** connects a layer’s particles in birth order, with width and age taper. Add flowing ribbon creates a separate example layer. Particle lifetime controls stream length; this is separate from straight velocity streak length.
 
-All three work in the 3D preview and export to Unreal 5.6/5.8 and Blender. Niagara uses native ribbon renderers and saved texture/material assets. Blender saves animated mesh frames and packed images; textured planes and ribbons use a fixed viewing direction, so they do not rotate to follow a moved Blender camera. These additions are the first stage of the Niagara roadmap. Event-driven layers, Unreal actor attachments, character surface emission, scene collisions and builder GPU simulation remain to be implemented.
+All three work in the 3D preview and export to Unreal 5.6/5.8 and Blender. Niagara uses native ribbon renderers and saved texture/material assets. Blender saves animated mesh frames and packed images; textured planes and ribbons use a fixed viewing direction, so they do not rotate to follow a moved Blender camera. These additions are the first stage of the Niagara roadmap. Arbitrary event-driven layer graphs, Unreal actor attachments, character surface emission, scene collisions and builder GPU simulation remain to be implemented.
 
 ## Native Niagara editor workspace
 

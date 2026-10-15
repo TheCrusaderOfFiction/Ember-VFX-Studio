@@ -62,7 +62,7 @@ bool FEmberImporter::Import(const FString& Filename,FString& AssetPath,FString& 
             if(!EmberAddLayer(System,*Settings,SafeLayer,Error))return false;
         }
         if(!Enabled){Error=TEXT("Enable at least one particle layer before exporting.");return false;}
-        System->RequestCompile(false);System->WaitForCompilationComplete();TArray<UNiagaraScript*> Scripts={System->GetSystemSpawnScript(),System->GetSystemUpdateScript()};for(const auto& Handle:System->GetEmitterHandles()){auto* Data=Handle.GetEmitterData();Scripts.Add(Data->SpawnScriptProps.Script);Scripts.Add(Data->UpdateScriptProps.Script);}
+        System->RequestCompile(false);System->WaitForCompilationComplete();TArray<UNiagaraScript*> Scripts={System->GetSystemSpawnScript(),System->GetSystemUpdateScript()};for(const auto& Handle:System->GetEmitterHandles()){auto* Data=Handle.GetEmitterData();Scripts.Add(Data->SpawnScriptProps.Script);Scripts.Add(Data->UpdateScriptProps.Script);for(const auto& Event:Data->GetEventHandlers())Scripts.Add(Event.Script);}
         for(auto* Script:Scripts){const auto Status=Script->GetLastCompileStatus();if(Status!=ENiagaraScriptCompileStatus::NCS_UpToDate&&Status!=ENiagaraScriptCompileStatus::NCS_UpToDateWithWarnings){Error=Script->GetVMExecutableData().ErrorMsg;for(const auto& Event:Script->GetVMExecutableData().LastCompileEvents){Error+=Event.Message+TEXT("\n");}UE_LOG(LogTemp,Error,TEXT("EMBER_COMPILE %s"),*Error);return false;}}
         FAssetRegistryModule::AssetCreated(System);System->MarkPackageDirty();FSavePackageArgs Args;Args.TopLevelFlags=RF_Public|RF_Standalone;const FString File=FPackageName::LongPackageNameToFilename(PackageName,FPackageName::GetAssetPackageExtension());if(!UPackage::SavePackage(Package,System,*File,Args)){Error=TEXT("Could not save Niagara system.");return false;}AssetPath=PackageName+TEXT(".")+AssetName.ToString();return true;
     }
@@ -107,7 +107,7 @@ bool FEmberImporter::Import(const FString& Filename,FString& AssetPath,FString& 
     System->RequestCompile(false);System->WaitForCompilationComplete();
     TArray<UNiagaraScript*> CompiledScripts={System->GetSystemSpawnScript(),System->GetSystemUpdateScript()};
     for(const auto& Handle:System->GetEmitterHandles())if(auto* Instance=Handle.GetEmitterData()){
-        CompiledScripts.Add(Instance->SpawnScriptProps.Script);CompiledScripts.Add(Instance->UpdateScriptProps.Script);
+        CompiledScripts.Add(Instance->SpawnScriptProps.Script);CompiledScripts.Add(Instance->UpdateScriptProps.Script);for(const auto& Event:Instance->GetEventHandlers())CompiledScripts.Add(Event.Script);
     }
     for(auto* Script:CompiledScripts){
         const auto Status=Script->GetLastCompileStatus();

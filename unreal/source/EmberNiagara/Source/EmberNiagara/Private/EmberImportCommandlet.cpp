@@ -26,6 +26,21 @@
 #include "Runtime/Launch/Resources/Version.h"
 
 namespace {
+bool VerifyParticleEvents(const FString& Asset,bool Natural=false){
+ auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);if(!System||!System->IsReadyToRun())return false;
+ auto* World=UWorld::CreateWorld(EWorldType::Game,false);GEngine->CreateNewWorldContext(EWorldType::Game).SetCurrentWorld(World);World->FXSystem=FFXSystemInterface::Create(World->GetFeatureLevel(),World->Scene);
+ auto* Component=NewObject<UNiagaraComponent>(World);Component->SetAutoActivate(false);Component->SetForceSolo(true);Component->SetAsset(System);Component->RegisterComponentWithWorld(World);Component->Activate(true);Component->AdvanceSimulation(Natural?90:45,1.0f/60.0f);
+ auto Controller=Component->GetSystemInstanceController();auto* Instance=Controller.IsValid()?Controller->GetSystemInstance_Unsafe():nullptr;bool Valid=Instance&&Instance->GetEmitters().Num()==3;
+ if(Valid)for(int32 E=0;E<3;E++){
+  auto& Emitter=Instance->GetEmitters()[E].Get();const auto& Data=Emitter.GetParticleData();const int32 Count=Emitter.GetNumParticles();const int32 Expected=E==0?0:E==1?(Natural?0:30):20;Valid&=Count==Expected;
+  UE_LOG(LogTemp,Display,TEXT("EMBER_EVENTS_SAMPLE %d count=%d expected=%d"),E,Count,Expected);
+  if(E==0)continue;const auto Pos=FNiagaraDataSetAccessor<FNiagaraPosition>(Data,TEXT("Position")).GetReader(Data);if(!Pos.IsValid()){Valid=false;continue;}
+  const auto* EmitterData=System->GetEmitterHandles()[E].GetEmitterData();Valid&=EmitterData->GetEventHandlers().Num()==1;
+  for(int32 I=0;I<Count;I++){const auto P=Pos.Get(I);if(P.X<120||P.X>180||P.Z<(Natural?30:-15)||P.Z>(Natural?80:25))Valid=false;}
+  if(Count>0)UE_LOG(LogTemp,Display,TEXT("EMBER_EVENTS_POSITION %d %f %f %f"),E,Pos.Get(0).X,Pos.Get(0).Y,Pos.Get(0).Z);
+ }
+ Component->DestroyComponent();GEngine->DestroyWorldContext(World);World->DestroyWorld(false);if(Valid)UE_LOG(LogTemp,Display,TEXT("EMBER_EVENTS_SUCCESS"));return Valid;
+}
 bool VerifyDynamics(const FString& Asset){
  auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);if(!System||!System->IsReadyToRun())return false;
  auto* World=UWorld::CreateWorld(EWorldType::Game,false);GEngine->CreateNewWorldContext(EWorldType::Game).SetCurrentWorld(World);World->FXSystem=FFXSystemInterface::Create(World->GetFeatureLevel(),World->Scene);
@@ -156,6 +171,8 @@ int32 UEmberImportCommandlet::Main(const FString& Params) {
     }
     if(FParse::Param(*Params,TEXT("VerifyDynamics"))&&!VerifyDynamics(Asset))return 1;
     if(FParse::Param(*Params,TEXT("VerifyAuthoring"))&&!VerifyAuthoring(Asset))return 1;
+    if(FParse::Param(*Params,TEXT("VerifyParticleDeath"))&&!VerifyParticleEvents(Asset,true))return 1;
+    if(FParse::Param(*Params,TEXT("VerifyParticleEvents"))&&!VerifyParticleEvents(Asset))return 1;
     if(FParse::Param(*Params,TEXT("VerifyObstacles"))&&!VerifyObstacles(Asset))return 1;
     if(FParse::Param(*Params,TEXT("VerifyStrips"))||FParse::Param(*Params,TEXT("VerifyAnime"))||FParse::Param(*Params,TEXT("VerifyAuthoring"))){
         auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);TArray<UMaterial*> Materials;

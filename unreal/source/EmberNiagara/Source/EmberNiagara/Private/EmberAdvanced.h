@@ -3,4 +3,4 @@
 #include "Dom/JsonObject.h"
 class UNiagaraEmitter;
 class UNiagaraSystem;
-bool EmberAddLayer(UNiagaraSystem* System,const TSharedPtr<FJsonObject>& Effect,const FString& Name,FString& Error);
+bool EmberAddLayer(UNiagaraSystem* System,const TSharedPtr<FJsonObject>& Effect,const FString& Name,FString& Error,const FGuid& EventSource=FGuid(),FName EventName=NAME_None,int32 EventCount=0);

@@ -2,6 +2,14 @@
 
 Available inside the app through Documentation, F1, and the ? buttons beside controls.
 
+## Collision and death response bursts
+
+Animation
+
+Open Particle event rules. On first collision creates one response burst at the first contact of each source particle with its enabled floor, sphere or box. Enable Collide with a surface and choose movement other than locked ring orbit. On death responds when a particle reaches its lifetime or is removed by collision. Clear timeline events, Restart, and deleting a layer do not create death responses. Choose Sparks, Smoke or Explosion, then adjust particles per event (1–32), size, speed, lifetime, color, Glow and Trail. Responses inherit the source anime look, have their own motion and lifetime, and do not recursively trigger rules. Changing a rule restarts the selected layer. Burst layers with rules play once; Restart replays them. The preview limits each response pool to 4,000 particles; native Niagara processes up to 128 events per frame per rule. These are effect-local analytic collisions, not arbitrary Unreal scene collisions. Niagara exports create CPU event generators and response emitters; Blender bakes the response particles as separate layers. Rules are saved in projects, presets and recovery.
+
+Try this: Add impact example to create sparks and smoke when falling particles hit the floor.
+
 ## Emitter motion paths
 
 Animation
