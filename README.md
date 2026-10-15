@@ -1,4 +1,4 @@
-# Ember VFX Studio — current desktop release (1.16)
+# Ember VFX Studio — current desktop release (1.17)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
 
@@ -30,6 +30,12 @@ Use **Forces, collisions & lifetime** to combine wind, drag, attraction, swirl, 
 Enable **Collide with a surface** for a movable horizontal plane. Choose Bounce or Remove particle, adjust its height, bounciness, and surface friction. Set continuous particle spin and a final lifetime color. All these controls work in the 3D preview, generated Niagara systems, saved projects/presets, and Blender bakes. Locked ring motion ignores forces and collisions. The collision plane is local to the effect and does not sample Unreal scene geometry.
 
 This expands direct authoring; full standalone Niagara parity, GPU simulation, arbitrary graphs, skeletal sampling and arbitrary scene collisions remain outside Ember's particle builder. Native project systems retain their advanced features in Unreal.
+
+## 3D collision obstacles
+
+Enable **Collide with a surface** and open **3D collision obstacles**. Choose a floor, sphere, or box. Position and resize it in effect-local centimeters; the blue wireframe follows the selected layer and animated values while the grid is on. Choose Bounce or Remove particle in the dynamics controls. Sphere and box contact preserve the reflected normal velocity with adjustable bounciness and tangential friction. Use **Add sphere deflection example** for an editable starting layer.
+
+These mathematical obstacles work in the preview, Niagara exports, and Blender particle bakes. They do not add scene meshes or sample arbitrary scene geometry. Collision uses per-step positions, so fast particles may pass through thin obstacles. Locked ring movement ignores collisions.
 
 ## Longer trails
 

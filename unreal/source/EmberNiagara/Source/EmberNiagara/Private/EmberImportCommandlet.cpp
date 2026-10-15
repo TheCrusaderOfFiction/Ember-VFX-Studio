@@ -39,6 +39,20 @@ bool VerifyDynamics(const FString& Asset){
  }
  Component->DestroyComponent();GEngine->DestroyWorldContext(World);World->DestroyWorld(false);if(Valid)UE_LOG(LogTemp,Display,TEXT("EMBER_DYNAMICS_SUCCESS"));return Valid;
 }
+bool VerifyObstacles(const FString& Asset){
+ auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);if(!System||!System->IsReadyToRun())return false;
+ auto* World=UWorld::CreateWorld(EWorldType::Game,false);GEngine->CreateNewWorldContext(EWorldType::Game).SetCurrentWorld(World);World->FXSystem=FFXSystemInterface::Create(World->GetFeatureLevel(),World->Scene);
+ auto* Component=NewObject<UNiagaraComponent>(World);Component->SetAutoActivate(false);Component->SetForceSolo(true);Component->SetAsset(System);Component->RegisterComponentWithWorld(World);Component->Activate(true);Component->AdvanceSimulation(45,1.0f/60.0f);
+ auto Controller=Component->GetSystemInstanceController();auto* Instance=Controller.IsValid()?Controller->GetSystemInstance_Unsafe():nullptr;bool Valid=Instance&&Instance->GetEmitters().Num()==4;
+ if(Valid)for(int32 E=0;E<4;E++){
+  auto& Emitter=Instance->GetEmitters()[E].Get();const auto& Data=Emitter.GetParticleData();const int32 Count=Emitter.GetNumParticles();if(E%2==1){Valid&=Count==0;continue;}if(Count!=100){Valid=false;continue;}
+  const auto Vel=FNiagaraDataSetAccessor<FVector3f>(Data,TEXT("Velocity")).GetReader(Data);const auto Pos=FNiagaraDataSetAccessor<FNiagaraPosition>(Data,TEXT("Position")).GetReader(Data);const auto Color=FNiagaraDataSetAccessor<FLinearColor>(Data,TEXT("Color")).GetReader(Data);const auto Rotation=FNiagaraDataSetAccessor<float>(Data,TEXT("SpriteRotation")).GetReader(Data);
+  if(!Vel.IsValid()||!Pos.IsValid()||!Color.IsValid()||!Rotation.IsValid()){Valid=false;continue;}
+  for(int32 I=0;I<Count;I++){const auto V=Vel.Get(I);const auto P=Pos.Get(I);if(V.X>-50||P.X>-45)Valid=false;}
+  UE_LOG(LogTemp,Display,TEXT("EMBER_OBSTACLES_SAMPLE %d count=%d velocity=(%f,%f,%f)"),E,Count,Vel.Get(0).X,Vel.Get(0).Y,Vel.Get(0).Z);
+ }
+ Component->DestroyComponent();GEngine->DestroyWorldContext(World);World->DestroyWorld(false);if(Valid)UE_LOG(LogTemp,Display,TEXT("EMBER_OBSTACLES_SUCCESS"));return Valid;
+}
 bool VerifyTimeline(const FString& Asset,bool Orbit=false,bool Stretch=false,bool Distance=false,bool TrailLength=false) {
     auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);
     if(!System||!System->IsReadyToRun()) {
@@ -121,6 +135,7 @@ int32 UEmberImportCommandlet::Main(const FString& Params) {
     if(!FParse::Value(*Params,TEXT("Effect="),File)){UE_LOG(LogTemp,Error,TEXT("Missing -Effect=<Ember JSON file>"));return 1;}
     if(!FEmberImporter::Import(File,Asset,Error)){UE_LOG(LogTemp,Error,TEXT("EMBER_IMPORT_FAILED %s"),*Error);return 1;}
     if(FParse::Param(*Params,TEXT("VerifyDynamics"))&&!VerifyDynamics(Asset))return 1;
+    if(FParse::Param(*Params,TEXT("VerifyObstacles"))&&!VerifyObstacles(Asset))return 1;
     if(FParse::Param(*Params,TEXT("VerifyAnime"))){
         auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);TArray<UMaterial*> Materials;
         for(const auto& Handle:System->GetEmitterHandles())for(auto* Renderer:Handle.GetEmitterData()->GetRenderers()){

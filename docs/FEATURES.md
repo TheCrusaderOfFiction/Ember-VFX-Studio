@@ -2,6 +2,14 @@
 
 Available inside the app through Documentation, F1, and the ? buttons beside controls.
 
+## Sphere and box collision obstacles
+
+Dynamics
+
+Enable Collide with a surface, then open 3D collision obstacles. Choose Horizontal floor, Sphere or Box. Sphere and box centers use effect-local X/Y/Z centimeters. Set a sphere radius or full box dimensions. Bounce reflects incoming velocity using Bounciness and Surface friction; Remove particle deletes particles that enter the shape. A blue wireframe shows the selected layer’s current obstacle when the grid is on, including animated sizes and positions. Move and resize obstacles through timeline property keys. Locked ring movement ignores collisions. The example button adds a separate sphere-deflection layer without replacing your effect. These shapes export as Niagara collision calculations and baked Blender particle motion; they do not create visible Unreal meshes or sample scene geometry. Fast particles can cross thin obstacles between simulation steps.
+
+Try this: Add sphere deflection, change the sphere radius, then switch On collision to Remove particle.
+
 ## Wind, drag, attraction and swirl
 
 Dynamics
