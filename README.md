@@ -1,10 +1,14 @@
-# Ember VFX Studio — current desktop release (1.20)
+# Ember VFX Studio — current desktop release (1.20.1)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
 
+## Example presets
+
+The **Examples** library tab contains eleven ready-made effects, replacing the old example buttons in the controls. Click a preset to use it on the active layer, or **Add to effect** to create another layer. Examples remain available after restarting and do not use personal preset slots.
+
 ## Collision and death response bursts
 
-Open **Particle event rules**. Add **On first collision** or **On death**, choose Sparks, Smoke or Explosion, and set its count, size, speed, lifetime, color, Glow and Trail. Responses appear where the source particle hits or dies. **Add impact example** adds a separate layer without replacing your effect.
+Open **Particle event rules**. Add **On first collision** or **On death**, choose Sparks, Smoke or Explosion, and set its count, size, speed, lifetime, color, Glow and Trail. Responses appear where the source particle hits or dies. Find **Impact responses** in the library’s **Examples** tab. Click its card to use it on the active layer, or **Add to effect** to create another layer.
 
 Collision needs **Collide with a surface** enabled and works with the floor, sphere and box. Each source particle reports its first contact once; death also includes collision removal. Timeline Clear, Restart and layer deletion do not trigger responses. Responses inherit the source anime look and do not trigger more responses. Rules save in projects, presets and recovery. Burst layers with rules play once; use Restart to replay them.
 
@@ -12,15 +16,15 @@ Unreal 5.6 and 5.8 exports use live CPU Niagara event generators and response em
 
 ## Visual emitter motion paths
 
-Open **Emitter motion path** for straight, arc and closed routes. Edit waypoint times and position offsets, or enable **Drag waypoints in preview**, choose the X/Y, X/Z or Y/Z plane and drag the handles. Hold Shift to snap to 5 cm. The guide shows the route and current emitter center. **Add fireball path example** adds an independent layer. Routes use straight segments, play once and hold at the end. Restart replays them. Preset/aimed emission leaves older particles behind; locked ring motion carries its orbit with the center.
+Open **Emitter motion path** for straight, arc and closed routes. Edit waypoint times and position offsets, or enable **Drag waypoints in preview**, choose the X/Y, X/Z or Y/Z plane and drag the handles. Hold Shift to snap to 5 cm. The guide shows the route and current emitter center. Find **Fireball path** in the **Examples** preset tab. Routes use straight segments, play once and hold at the end. Restart replays them. Preset/aimed emission leaves older particles behind; locked ring motion carries its orbit with the center.
 
 Routes reuse ordinary position animation keys, so existing save, preset, Blender and Niagara workflows carry them. Editing a route replaces position keys only. Other properties and particle events stay. Each point uses three of the timeline’s 64 keys, with up to 21 waypoints. **Remove path, keep start** removes movement and keeps the first position.
 
 ## Curves, textures and ribbons
 
-- **Lifetime curves & color gradient** edits two to eight stops for particle size, opacity and color, from birth to death. Grow & dissolve and Hot spark gradient provide starting points.
+- **Lifetime curves & color gradient** edits two to eight stops for particle size, opacity and color, from birth to death. Grow & dissolve and Hot spark gradient are available in the Examples preset tab.
 - **Particle textures & flipbooks** imports a PNG or animation sheet, with rows, columns, frame rate and looping. Images are embedded in projects and presets; use PNGs up to 2048 × 2048 and 256 KB.
-- **Curved ribbons** connects a layer’s particles in birth order, with width and age taper. Add flowing ribbon creates a separate example layer. Particle lifetime controls stream length; this is separate from straight velocity streak length.
+- **Curved ribbons** connects a layer’s particles in birth order, with width and age taper. Find Flowing ribbon in the Examples preset tab. Particle lifetime controls stream length; this is separate from straight velocity streak length.
 
 All three work in the 3D preview and export to Unreal 5.6/5.8 and Blender. Niagara uses native ribbon renderers and saved texture/material assets. Blender saves animated mesh frames and packed images; textured planes and ribbons use a fixed viewing direction, so they do not rotate to follow a moved Blender camera. These additions are the first stage of the Niagara roadmap. Arbitrary event-driven layer graphs, Unreal actor attachments, character surface emission, scene collisions and builder GPU simulation remain to be implemented.
 
@@ -55,7 +59,7 @@ This expands direct authoring; full standalone Niagara parity, GPU simulation, a
 
 ## 3D collision obstacles
 
-Enable **Collide with a surface** and open **3D collision obstacles**. Choose a floor, sphere, or box. Position and resize it in effect-local centimeters; the blue wireframe follows the selected layer and animated values while the grid is on. Choose Bounce or Remove particle in the dynamics controls. Sphere and box contact preserve the reflected normal velocity with adjustable bounciness and tangential friction. Use **Add sphere deflection example** for an editable starting layer.
+Enable **Collide with a surface** and open **3D collision obstacles**. Choose a floor, sphere, or box. Position and resize it in effect-local centimeters; the blue wireframe follows the selected layer and animated values while the grid is on. Choose Bounce or Remove particle in the dynamics controls. Sphere and box contact preserve the reflected normal velocity with adjustable bounciness and tangential friction. Load **Sphere deflection** from the **Examples** preset tab.
 
 These mathematical obstacles work in the preview, Niagara exports, and Blender particle bakes. They do not add scene meshes or sample arbitrary scene geometry. Collision uses per-step positions, so fast particles may pass through thin obstacles. Locked ring movement ignores collisions.
 
@@ -111,7 +115,7 @@ Drag the playback slider to preview a chosen time; this pauses playback. Animate
 
 ## Aim velocity or spin in a ring
 
-Under **Shape & motion → Particle movement**, choose **Aim the velocity** and set Heading and Elevation in degrees. Movement speed sets the launch speed. Choose **Spin around a ring** for a horizontal circular orbit, or click **Try a spinning ring** to set one up. Ring spin is degrees per second: +90 turns counterclockwise, −90 clockwise, and zero pauses rotation. Spread controls radius. Orbit ignores gravity and turbulence to keep a stable circle. Heading, elevation, and ring spin can be keyframed.
+Under **Shape & motion → Particle movement**, choose **Aim the velocity** and set Heading and Elevation in degrees. Movement speed sets the launch speed. Choose **Spin around a ring** for a horizontal circular orbit, or click **Spinning ring preset** to set one up. Ring spin is degrees per second: +90 turns counterclockwise, −90 clockwise, and zero pauses rotation. Spread controls radius. Orbit ignores gravity and turbulence to keep a stable circle. Heading, elevation, and ring spin can be keyframed.
 
 ## Randomness and emission stretch
 

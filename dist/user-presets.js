@@ -18,20 +18,20 @@ window.refreshSavedPresetCapacity=()=>document.querySelectorAll('.saved-preset-a
 const builtInPresetList=list;
 list=()=>{
  builtInPresetList();const host=$('#presets');
- const matches=userPresets.filter(item=>(filter==='all'||filter==='mine')&&item.name.toLowerCase().includes($('#search').value.toLowerCase()));
+ const matches=[...EmberExamplePresets,...userPresets].filter(item=>(filter==='all'||filter===(item.builtIn?'examples':'mine'))&&item.name.toLowerCase().includes($('#search').value.toLowerCase()));
  if(matches.length&&host.querySelector('p'))host.replaceChildren();
  for(const item of matches){
-  const card=document.createElement('div');card.className='preset-card saved-preset-card';
+  const card=document.createElement('div');card.className='preset-card saved-preset-card';if(item.builtIn)card.dataset.exampleId=item.id;
   const use=document.createElement('button');use.className='preset saved-preset';use.title='Use on active layer';use.setAttribute('aria-label','Use preset '+item.name);
   const thumb=document.createElement('span');thumb.className='thumb';thumb.textContent='✦';thumb.style.setProperty('--c',item.project.layers[0].effect.color);
-  const text=document.createElement('span'),name=document.createElement('b'),tag=document.createElement('small');name.textContent=item.name;tag.textContent='MY PRESET · '+item.project.layers.length+' '+(item.project.layers.length===1?'LAYER':'LAYERS');text.append(name,tag);use.append(thumb,text);
+  const text=document.createElement('span'),name=document.createElement('b'),tag=document.createElement('small');name.textContent=item.name;tag.textContent=(item.builtIn?'EXAMPLE PRESET · ':'MY PRESET · ')+item.project.layers.length+' '+(item.project.layers.length===1?'LAYER':'LAYERS');text.append(name,tag);use.append(thumb,text);
   use.onclick=()=>openPresetOnActiveLayer(item);
   const actions=document.createElement('div');actions.className='saved-preset-actions';
   const add=document.createElement('button');add.className='preset-add saved-preset-add';add.dataset.layerCount=item.project.layers.length;add.textContent=item.project.layers.length>1?'＋ Add all layers':'＋ Add to effect';add.setAttribute('aria-label','Add '+item.name+' to effect');
   add.onclick=()=>addAllPresetLayers(item);
   const remove=document.createElement('button');remove.className='delete-preset';remove.textContent='×';remove.title='Delete saved preset';remove.setAttribute('aria-label','Delete preset '+item.name);
   remove.onclick=()=>{dialog('<h2>Delete saved preset?</h2><p id="delete-preset-name"></p><p>Your current effect stays as it is.</p><button id="confirm-delete-preset">Delete preset</button><button id="cancel-delete-preset">Keep preset</button>');$('#delete-preset-name').textContent=item.name;$('#cancel-delete-preset').onclick=()=>$('#dialog').close();$('#confirm-delete-preset').onclick=()=>{if(storeUserPresets(userPresets.filter(saved=>saved.id!==item.id))){$('#dialog').close();toast('Preset deleted');}};};
-  actions.append(add,remove);card.append(use,actions);host.append(card);
+  actions.append(add);if(!item.builtIn)actions.append(remove);card.append(use,actions);host.append(card);
  }
  window.refreshSavedPresetCapacity();
 };

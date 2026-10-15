@@ -2,21 +2,29 @@
 
 Available inside the app through Documentation, F1, and the ? buttons beside controls.
 
+## Example presets
+
+Getting started
+
+Open Examples in the preset library. Impact responses, Fireball path, Flowing ribbon, Sphere deflection, Tornado, Black hole, Drifting smoke, Ricochet sparks, Spinning ring, Grow & dissolve and Hot spark gradient are built-in presets. Click a card to replace only the active layer. Add to effect creates a new layer alongside your existing particles. Search finds examples by name. These presets are available after reopening Ember and do not use your 100 personal preset slots. Edit one and choose Save as preset to keep your own version.
+
+Try this: Open Examples, then add Impact responses to your effect.
+
 ## Collision and death response bursts
 
 Animation
 
 Open Particle event rules. On first collision creates one response burst at the first contact of each source particle with its enabled floor, sphere or box. Enable Collide with a surface and choose movement other than locked ring orbit. On death responds when a particle reaches its lifetime or is removed by collision. Clear timeline events, Restart, and deleting a layer do not create death responses. Choose Sparks, Smoke or Explosion, then adjust particles per event (1–32), size, speed, lifetime, color, Glow and Trail. Responses inherit the source anime look, have their own motion and lifetime, and do not recursively trigger rules. Changing a rule restarts the selected layer. Burst layers with rules play once; Restart replays them. The preview limits each response pool to 4,000 particles; native Niagara processes up to 128 events per frame per rule. These are effect-local analytic collisions, not arbitrary Unreal scene collisions. Niagara exports create CPU event generators and response emitters; Blender bakes the response particles as separate layers. Rules are saved in projects, presets and recovery.
 
-Try this: Add impact example to create sparks and smoke when falling particles hit the floor.
+Try this: Load Impact responses from Examples to create sparks and smoke when falling particles hit the floor.
 
 ## Emitter motion paths
 
 Animation
 
-Open Emitter motion path. Straight route, Arc route and Closed route create editable starting-position keys for the active layer. Other property keys and timed bursts or clears stay unchanged. Select a waypoint to edit its time and X/Y/Z offsets in centimeters. The first time stays at zero; later times must increase. Add waypoint inserts after the selected point. Remove deletes a middle or final point when at least two remain. Drag waypoints in preview enables 3D handles; select the X/Y, X/Z or Y/Z drag plane, then drag a handle. Hold Shift to snap to 5 centimeters. Change the camera or drag plane if viewing it edge-on. A purple line shows the route and a gold marker shows the current emitter center. Hide the grid to hide the guide unless drag mode is on. Routes use straight segments between points, play once, and hold their final position; Restart replays them. Existing emitted particles keep traveling independently, while locked ring motion carries existing orbits with its moving center. Lifetime controls visible trail duration; emission keys can stop new particles at the end. Remove path, keep start clears only position keys and retains the first waypoint as the static starting offset. Routes use three ordinary timeline keys per point, sharing the 64-key budget, up to 21 waypoints. Editing converts existing position keys into linear route segments. Projects, presets, Blender baking and Niagara exports already preserve these position keys. Add fireball path example adds a new layer.
+Open Emitter motion path. Straight route, Arc route and Closed route create editable starting-position keys for the active layer. Other property keys and timed bursts or clears stay unchanged. Select a waypoint to edit its time and X/Y/Z offsets in centimeters. The first time stays at zero; later times must increase. Add waypoint inserts after the selected point. Remove deletes a middle or final point when at least two remain. Drag waypoints in preview enables 3D handles; select the X/Y, X/Z or Y/Z drag plane, then drag a handle. Hold Shift to snap to 5 centimeters. Change the camera or drag plane if viewing it edge-on. A purple line shows the route and a gold marker shows the current emitter center. Hide the grid to hide the guide unless drag mode is on. Routes use straight segments between points, play once, and hold their final position; Restart replays them. Existing emitted particles keep traveling independently, while locked ring motion carries existing orbits with its moving center. Lifetime controls visible trail duration; emission keys can stop new particles at the end. Remove path, keep start clears only position keys and retains the first waypoint as the static starting offset. Routes use three ordinary timeline keys per point, sharing the 64-key budget, up to 21 waypoints. Editing converts existing position keys into linear route segments. Projects, presets, Blender baking and Niagara exports already preserve these position keys. Find Fireball path in the Examples preset tab.
 
-Try this: Add fireball path example, choose X/Z drag plane, and drag the middle waypoint upward.
+Try this: Load Fireball path from Examples, enable drag mode, choose X/Z, and drag the middle waypoint upward.
 
 ## Particle PNG textures and flipbooks
 
@@ -30,9 +38,9 @@ Try this: Use a 4 by 4 smoke sheet at 12 frames per second and turn looping off.
 
 Appearance
 
-Open Curved ribbons and choose Connected ribbon. This enables trails and joins live particles of the layer in birth order into a camera-facing strip. Ribbon width is measured in centimeters; Taper toward older particles shrinks the strip as particles age. Each layer has its own ribbon. Use continuous emission, a narrow point and low direction randomness for smooth curves. Lifetime sets the visible stream length; Straight streaks still uses Trail length instead. Lifetime opacity and color gradients also shade the ribbon. The flowing-ribbon example adds a new layer. Exports use a native Niagara ribbon renderer, while Blender bakes ribbon geometry using a fixed viewing direction. A ribbon joins particles; it does not record a separate historical trail behind every particle.
+Open Curved ribbons and choose Connected ribbon. This enables trails and joins live particles of the layer in birth order into a camera-facing strip. Ribbon width is measured in centimeters; Taper toward older particles shrinks the strip as particles age. Each layer has its own ribbon. Use continuous emission, a narrow point and low direction randomness for smooth curves. Lifetime sets the visible stream length; Straight streaks still uses Trail length instead. Lifetime opacity and color gradients also shade the ribbon. Find Flowing ribbon in the Examples preset tab. Exports use a native Niagara ribbon renderer, while Blender bakes ribbon geometry using a fixed viewing direction. A ribbon joins particles; it does not record a separate historical trail behind every particle.
 
-Try this: Add flowing ribbon, then change wind to bend it.
+Try this: Load Flowing ribbon from Examples, then change wind to bend it.
 
 ## Lifetime curves and color gradients
 
@@ -40,23 +48,23 @@ Animation
 
 Open Lifetime curves & color gradient and choose Size multiplier, Opacity or Color gradient. Enable Use this curve to edit up to eight stops from birth (0 percent) to death (100 percent). Interior stop ages and values are editable; Remove deletes a middle stop, and Add stop divides the largest gap. Size multiplies particle size from 0 to 5. Opacity is absolute from 0 to 1, then multiplied by the layer opacity. Color gradients blend in linear color space. Enabled curves replace the matching end-size, end-opacity or two-color lifetime fade. Curves apply separately to each particle based on its age, while the layer timeline continues to animate global properties. Projects and presets preserve curves. Sprite and mesh preview, Blender baking and Niagara exports use the curves.
 
-Try this: Try Grow & dissolve with smoke, or Hot spark gradient on sparks.
+Try this: Load Grow & dissolve or Hot spark gradient from Examples.
 
 ## Sphere and box collision obstacles
 
 Dynamics
 
-Enable Collide with a surface, then open 3D collision obstacles. Choose Horizontal floor, Sphere or Box. Sphere and box centers use effect-local X/Y/Z centimeters. Set a sphere radius or full box dimensions. Bounce reflects incoming velocity using Bounciness and Surface friction; Remove particle deletes particles that enter the shape. A blue wireframe shows the selected layer’s current obstacle when the grid is on, including animated sizes and positions. Move and resize obstacles through timeline property keys. Locked ring movement ignores collisions. The example button adds a separate sphere-deflection layer without replacing your effect. These shapes export as Niagara collision calculations and baked Blender particle motion; they do not create visible Unreal meshes or sample scene geometry. Fast particles can cross thin obstacles between simulation steps.
+Enable Collide with a surface, then open 3D collision obstacles. Choose Horizontal floor, Sphere or Box. Sphere and box centers use effect-local X/Y/Z centimeters. Set a sphere radius or full box dimensions. Bounce reflects incoming velocity using Bounciness and Surface friction; Remove particle deletes particles that enter the shape. A blue wireframe shows the selected layer’s current obstacle when the grid is on, including animated sizes and positions. Move and resize obstacles through timeline property keys. Locked ring movement ignores collisions. Find Sphere deflection in the Examples preset tab. These shapes export as Niagara collision calculations and baked Blender particle motion; they do not create visible Unreal meshes or sample scene geometry. Fast particles can cross thin obstacles between simulation steps.
 
-Try this: Add sphere deflection, change the sphere radius, then switch On collision to Remove particle.
+Try this: Load Sphere deflection from Examples, change its radius, then switch On collision to Remove particle.
 
 ## Wind, drag, attraction and swirl
 
 Dynamics
 
-Open Forces, collisions & lifetime. Wind X/Y/Z adds acceleration in centimeters per second squared. Air resistance slows velocity exponentially per second. Positive Pull / push attracts particles to Force center; negative pushes away. Swirl force adds tangential acceleration around the vertical axis through Force center; its sign reverses direction. Swirl lift adds vertical acceleration. These forces combine with aimed or preset movement, gravity and turbulence. Locked ring motion ignores forces and collisions. Force values can be animated through Change a property. Recipe buttons add independent layers and preserve your current effect.
+Open Forces, collisions & lifetime. Wind X/Y/Z adds acceleration in centimeters per second squared. Air resistance slows velocity exponentially per second. Positive Pull / push attracts particles to Force center; negative pushes away. Swirl force adds tangential acceleration around the vertical axis through Force center; its sign reverses direction. Swirl lift adds vertical acceleration. These forces combine with aimed or preset movement, gravity and turbulence. Locked ring motion ignores forces and collisions. Force values can be animated through Change a property. Force recipes are presets in the Examples library tab. Click a card to use it on the active layer, or Add to effect to create a separate layer.
 
-Try this: Add tornado, then increase Air resistance to make the swirl settle.
+Try this: Load Tornado from Examples, then increase Air resistance to make the swirl settle.
 
 ## Collision surface
 
@@ -374,7 +382,7 @@ Try this: Choose Square and set Random particle angle to 180 for varied confetti
 
 Motion
 
-Choose Preset movement for the original effect, Aim the velocity to send particles in a chosen direction, or Spin around a ring to keep particles on a horizontal orbit. Try a spinning ring sets up the selected layer. Orbit uses Ring spin instead of Movement speed, gravity, or turbulence.
+Choose Preset movement for the original effect, Aim the velocity to send particles in a chosen direction, or Spin around a ring to keep particles on a horizontal orbit. Spinning ring preset sets up the selected layer. Orbit uses Ring spin instead of Movement speed, gravity, or turbulence.
 
 Try this: Use Spin around a ring, then set Ring spin to −90 to reverse it.
 

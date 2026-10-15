@@ -1,6 +1,6 @@
 (()=>{
  const panel=document.createElement('details');panel.id='event-rules-panel';panel.className='advanced';panel.open=true;
- panel.innerHTML='<summary>Particle event rules</summary><p class="animation-intro">When a particle hits or dies, create a burst right there.</p><div class="animation-actions"><button id="add-collision-rule">＋ On first collision</button><button id="add-death-rule">＋ On death</button><button id="event-rules-help" aria-label="Event rules help">?</button></div><p id="event-rules-hint" class="animation-intro"></p><div id="event-rules-list"></div><button id="try-event-rules">Add impact example</button>';
+ panel.innerHTML='<summary>Particle event rules</summary><p class="animation-intro">When a particle hits or dies, create a burst right there.</p><div class="animation-actions"><button id="add-collision-rule">＋ On first collision</button><button id="add-death-rule">＋ On death</button><button id="event-rules-help" aria-label="Event rules help">?</button></div><p id="event-rules-hint" class="animation-intro"></p><div id="event-rules-list"></div>';
  $('#animation-panel').before(panel);
  function commit(rules){try{EmberEventRules.validate(rules);state.eventRules=rules;window.resetSelectedLayer();persist();refresh();}catch(error){toast(error.message);}}
  function refresh(){const rules=state.eventRules||[],host=$('#event-rules-list');host.replaceChildren();for(const trigger of ['collision','death'])$('#add-'+trigger+'-rule').disabled=rules.some(r=>r.trigger===trigger);
@@ -15,7 +15,6 @@
   });
  }
  for(const trigger of ['collision','death'])$('#add-'+trigger+'-rule').onclick=()=>commit([...(state.eventRules||[]),EmberEventRules.rule(trigger,trigger==='death'?'smoke':'sparks')]);
- $('#try-event-rules').onclick=()=>addParticleLayer({...EmberCatalog.presets.find(p=>p.id==='custom'),name:'Impact responses',motion:'aimed',shape:'point',velocityPitch:-90,amount:5,speed:100,life:5,positionZ:100,gravity:0,trail:true,bounce:true,colliderType:'plane',collisionHeight:0,collisionResponse:'kill',eventRules:[EmberEventRules.rule('collision'),EmberEventRules.rule('death','smoke')]},'Impact responses');
  $('#event-rules-help').onclick=()=>openDocumentation('event-rules');
  const previous=sync;sync=()=>{previous();refresh();};const oldBounce=$('#advanced-bounce').oninput;$('#advanced-bounce').oninput=event=>{oldBounce(event);refresh();};refresh();
 })();

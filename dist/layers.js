@@ -21,7 +21,6 @@ sync();
 window.resetSelectedLayer=()=>{particles=[];const layer=layers[activeLayer];EmberAnimation.reset(layer);};
 
 function renderMotionControls(){$('#advanced-animeSteps').disabled=$('#advanced-animeOutline').disabled=!state.anime;$('#advanced-trailLength').disabled=!state.trail;$('#velocity-angles').hidden=state.motion!=='aimed';$('#ring-spin-controls').hidden=state.motion!=='orbit';$('#advanced-shape').disabled=state.motion==='orbit';$('#advanced-directionRandom').disabled=state.motion==='orbit';$('#advanced-radiusVariation').disabled=state.motion!=='orbit'&&state.shape!=='ring';for(const key of ['gravity','turbulence','bounce'])$('#advanced-'+key).disabled=state.motion==='orbit';const speed=$('[data-key="speed"]');if(speed)speed.disabled=state.motion==='orbit';}
-$('#spinning-ring').onclick=()=>{state={...EmberCatalog.presets.find(p=>p.id==='custom'),name:'Spinning ring',shape:'ring',motion:'orbit',ringSpin:90,amount:100,life:4,trail:true};sync();window.resetSelectedLayer?.();persist();toast('Ring ready — change Ring spin to reverse or speed it up')};
 renderMotionControls();
 
 $('#reset-stretch').onclick=()=>{state.emitScaleX=state.emitScaleY=state.emitScaleZ=1;sync();window.resetSelectedLayer?.();persist()};
