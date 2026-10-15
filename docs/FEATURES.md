@@ -254,7 +254,7 @@ Try this: Use squares for confetti and rings for bubbles.
 
 Appearance
 
-Adds a bright core and halo in the preview. In Unreal it uses emissive particle color; scene bloom affects the visible halo.
+Adds a bright core and halo in the preview. Glow strength ranges from 0 to 5×, with 1× preserving the original look. The lifetime Glow intensity curve multiplies this strength, so a 2× strength and 0.5 lifetime value give 1× glow. Turn on Glow to use the slider. In Unreal it uses emissive particle color; scene bloom affects the visible halo.
 
 Try this: Turn glow off for leaves, confetti, and opaque-looking debris.
 

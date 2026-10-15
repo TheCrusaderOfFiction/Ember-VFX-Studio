@@ -4,6 +4,6 @@
  function sample(points,t,mix=(a,b,f)=>a+(b-a)*f){t=Math.max(0,Math.min(1,t));for(let i=1;i<points.length;i++)if(t<=points[i].time){const a=points[i-1],b=points[i];return mix(a.value,b.value,(t-a.time)/(b.time-a.time));}return points.at(-1).value;}
  function size(settings,t){return settings.lifetime?.size?sample(settings.lifetime.size,t):1+((settings.endSize??1)-1)*t;}
  function opacity(settings,t){return settings.lifetime?.opacity?sample(settings.lifetime.opacity,t):Math.min(t*8,1)*(1-t*(1-(settings.endOpacity??0)));}
- function glow(settings,t){return settings.glow?(settings.lifetime?.glow?sample(settings.lifetime.glow,t):1):0;}
+ function glow(settings,t){return settings.glow?(settings.glowStrength??1)*(settings.lifetime?.glow?sample(settings.lifetime.glow,t):1):0;}
  return {validate,sample,size,opacity,glow};
 });
