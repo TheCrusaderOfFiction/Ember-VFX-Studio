@@ -1,6 +1,12 @@
-# Ember VFX Studio — current desktop release (1.21)
+# Ember VFX Studio — current desktop release (1.22)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
+
+## Keep animated properties on events
+
+- Timed **Add particles** events have **Keep animated properties** enabled by default. Turn it off for a burst that uses the layer’s base settings while other particles continue following its timeline. Lifetime curves still apply.
+- Custom collision/death responses have **Keep source animated properties**, off by default. Enable it to replay the chosen source’s property keys from zero on each response burst. Particle count stays controlled by the rule; source timed bursts, clears and emission/count keys are excluded. Choose the source again to capture later edits.
+- Both options persist in projects, presets and recovery and carry through Niagara exports and Blender baking.
 
 ## Surface emission, scene tools and effect controls
 
