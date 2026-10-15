@@ -1,10 +1,10 @@
-# Ember VFX Studio — current desktop release (1.20.1)
+# Ember VFX Studio — current desktop release (1.20.2)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
 
 ## Example presets
 
-The **Examples** library tab contains eleven ready-made effects, replacing the old example buttons in the controls. Click a preset to use it on the active layer, or **Add to effect** to create another layer. Examples remain available after restarting and do not use personal preset slots.
+In **All effects**, the eleven example presets appear directly above **Blank particle**. The **Examples** library tab contains these ready-made effects, replacing the old example buttons in the controls. Click a preset to use it on the active layer, or **Add to effect** to create another layer. Examples remain available after restarting and do not use personal preset slots.
 
 ## Collision and death response bursts
 

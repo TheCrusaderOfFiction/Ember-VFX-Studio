@@ -31,7 +31,7 @@ list=()=>{
   add.onclick=()=>addAllPresetLayers(item);
   const remove=document.createElement('button');remove.className='delete-preset';remove.textContent='×';remove.title='Delete saved preset';remove.setAttribute('aria-label','Delete preset '+item.name);
   remove.onclick=()=>{dialog('<h2>Delete saved preset?</h2><p id="delete-preset-name"></p><p>Your current effect stays as it is.</p><button id="confirm-delete-preset">Delete preset</button><button id="cancel-delete-preset">Keep preset</button>');$('#delete-preset-name').textContent=item.name;$('#cancel-delete-preset').onclick=()=>$('#dialog').close();$('#confirm-delete-preset').onclick=()=>{if(storeUserPresets(userPresets.filter(saved=>saved.id!==item.id))){$('#dialog').close();toast('Preset deleted');}};};
-  actions.append(add);if(!item.builtIn)actions.append(remove);card.append(use,actions);host.append(card);
+  actions.append(add);if(!item.builtIn)actions.append(remove);card.append(use,actions);const blank=item.builtIn?host.querySelector('.preset[data-id="custom"]')?.closest('.preset-card'):null;if(blank)host.insertBefore(card,blank);else host.append(card);
  }
  window.refreshSavedPresetCapacity();
 };
