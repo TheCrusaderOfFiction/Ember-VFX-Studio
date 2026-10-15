@@ -43,6 +43,29 @@ def material(name, glow, effect=None):
     if hasattr(mat,'surface_render_method'):mat.surface_render_method='DITHERED'
     return mat
 
+def anime_strip_material(name,effect):
+    mat=bpy.data.materials.new(name);mat.use_nodes=True;nodes=mat.node_tree.nodes;nodes.clear();links=mat.node_tree.links
+    color=nodes.new('ShaderNodeAttribute');color.attribute_name='ember_color'
+    uv=nodes.new('ShaderNodeTexCoord');separate=nodes.new('ShaderNodeSeparateXYZ');links.new(uv.outputs['UV'],separate.inputs[0])
+    def math_node(operation,source,value=None):
+        node=nodes.new('ShaderNodeMath');node.operation=operation;links.new(source,node.inputs[0])
+        if value is not None:node.inputs[1].default_value=value
+        return node.outputs[0]
+    cross=math_node('ABSOLUTE',math_node('SUBTRACT',math_node('MULTIPLY',separate.outputs['X'],2),1))
+    inverse=nodes.new('ShaderNodeMath');inverse.operation='SUBTRACT';inverse.inputs[0].default_value=1;links.new(cross,inverse.inputs[1])
+    steps=effect.get('animeSteps',3);outline=effect.get('animeOutline',8)/100
+    band=math_node('FLOOR',math_node('MULTIPLY',math_node('MINIMUM',inverse.outputs[0],.9999),steps))
+    band=math_node('ADD',math_node('MULTIPLY',band,.65/(steps-1)),.35)
+    shade=nodes.new('ShaderNodeMixRGB');shade.blend_type='MULTIPLY';shade.inputs[0].default_value=1;links.new(color.outputs['Color'],shade.inputs[1]);links.new(band,shade.inputs[2])
+    glow=nodes.new('ShaderNodeMixRGB');glow.blend_type='MULTIPLY';glow.inputs[0].default_value=1;links.new(shade.outputs[0],glow.inputs[1]);brightness=3 if effect['glow'] else 1;glow.inputs[2].default_value=(brightness,brightness,brightness,1)
+    ink=nodes.new('ShaderNodeMixRGB');ink.inputs[2].default_value=(.008,.01,.018,1);links.new(glow.outputs[0],ink.inputs[1])
+    if outline>0:links.new(math_node('GREATER_THAN',cross,1-outline),ink.inputs[0])
+    else:ink.inputs[0].default_value=0
+    emission=nodes.new('ShaderNodeEmission');links.new(ink.outputs[0],emission.inputs['Color']);emission.inputs['Strength'].default_value=1
+    transparent=nodes.new('ShaderNodeBsdfTransparent');mix=nodes.new('ShaderNodeMixShader');links.new(color.outputs['Alpha'],mix.inputs[0]);links.new(transparent.outputs[0],mix.inputs[1]);links.new(emission.outputs[0],mix.inputs[2]);out=nodes.new('ShaderNodeOutputMaterial');links.new(mix.outputs[0],out.inputs['Surface'])
+    if hasattr(mat,'surface_render_method'):mat.surface_render_method='DITHERED'
+    mat['ember_anime_strip']=True;mat['ember_anime_steps']=steps;mat['ember_anime_outline']=outline;return mat
+
 def node_group(name, mat, shape='soft', trail=False, mesh_object=None):
     group=bpy.data.node_groups.new(name,'GeometryNodeTree')
     group.interface.new_socket(name='Geometry',in_out='INPUT',socket_type='NodeSocketGeometry');group.interface.new_socket(name='Geometry',in_out='OUTPUT',socket_type='NodeSocketGeometry')
@@ -95,6 +118,19 @@ def ribbon_object(collection,name,points,frame,mat,effect):
         if index:faces.append((index*2-2,index*2-1,index*2+1,index*2))
     mesh=bpy.data.meshes.new(name);mesh.from_pydata(vertices,[],faces);mesh.update();mesh.materials.append(mat)
     mesh.color_attributes.new(name='ember_color',type='FLOAT_COLOR',domain='POINT').data.foreach_set('color',colors)
+    uv=mesh.uv_layers.new(name='UVMap')
+    for loop in mesh.loops:uv.data[loop.index].uv=(loop.vertex_index%2,(loop.vertex_index//2)/max(1,len(points)-1))
+    obj=bpy.data.objects.new(name,mesh);collection.objects.link(obj);animate_frame(obj,frame);return obj
+
+def anime_trail_object(collection,name,points,frame,mat):
+    vertices=[];faces=[];colors=[];uvs=[]
+    for p in points:
+        head=Vector(p[:3]);tail=Vector(p[9:12]);side=(head-tail).cross(Vector((0,-1,.5)))
+        if side.length<1e-8:continue
+        side.normalize();side*=max(.003,p[3]*.35)*.5;base=len(vertices);vertices.extend([head-side,head+side,tail-side,tail+side]);faces.append((base,base+1,base+3,base+2));uvs.extend([(0,0),(1,0),(0,1),(1,1)])
+        for alpha in [.55,.55,.08,.08]:colors.extend([*p[5:8],p[8]*alpha])
+    mesh=bpy.data.meshes.new(name);mesh.from_pydata(vertices,[],faces);mesh.update();mesh.materials.append(mat);mesh.color_attributes.new(name='ember_color',type='FLOAT_COLOR',domain='POINT').data.foreach_set('color',colors);uv=mesh.uv_layers.new(name='UVMap')
+    for loop in mesh.loops:uv.data[loop.index].uv=uvs[loop.vertex_index]
     obj=bpy.data.objects.new(name,mesh);collection.objects.link(obj);animate_frame(obj,frame);return obj
 
 def flipbook_object(collection,name,points,frame,mat,effect):
@@ -120,13 +156,15 @@ def export_effect(job):
         obj.data.transform(Matrix.Scale(2/extent,4) @ Matrix.Translation(-center));obj.name='Ember source mesh '+reference[:8];obj.hide_render=True;obj.hide_set(True);templates[reference]=obj
     for layer in data['layers']:
         collection=bpy.data.collections.new(layer['name']);scene.collection.children.link(collection);mat=material('Ember '+layer['name'],layer['effect']['glow'],{key:value for key,value in layer['effect'].items() if key!='flipbook' or layer['effect'].get('renderer')!='mesh'});head=node_group('Ember '+layer['name'],mat,layer['effect']['sprite'],mesh_object=templates.get(layer['effect'].get('meshRef')));tail=node_group('Ember trail '+layer['name'],mat,trail=True) if layer['effect']['trail'] and layer['effect'].get('trailMode')!='ribbon' else None
-        strip_effect={key:value for key,value in layer['effect'].items() if key!='flipbook'};strip_mat=material('Ember strip '+layer['name'],strip_effect['glow'],strip_effect) if layer['effect'].get('flipbook') else mat
+        strip_effect={key:value for key,value in layer['effect'].items() if key!='flipbook'};strip_mat=anime_strip_material('Ember strip '+layer['name'],strip_effect) if strip_effect.get('anime') else material('Ember strip '+layer['name'],strip_effect['glow'],strip_effect) if layer['effect'].get('flipbook') else mat
         if tail:tail=node_group('Ember plain trail '+layer['name'],strip_mat,trail=True)
         for index,points in enumerate(layer['frames']):
             if layer['effect'].get('flipbook') and layer['effect'].get('renderer')!='mesh':flipbook_object(collection,'Ember texture '+layer['name']+' '+str(index+1),points,index+1,mat,layer['effect'])
             else:frame_object(collection,'Ember '+layer['name']+' '+str(index+1),points,index+1,head)
             if layer['effect']['trail'] and layer['effect'].get('trailMode')=='ribbon':ribbon_object(collection,'Ember ribbon '+layer['name']+' '+str(index+1),points,index+1,strip_mat,layer['effect'])
-            if tail:frame_object(collection,'Ember trail '+layer['name']+' '+str(index+1),points,index+1,tail,True)
+            if tail:
+                if layer['effect'].get('anime'):anime_trail_object(collection,'Ember trail '+layer['name']+' '+str(index+1),points,index+1,strip_mat)
+                else:frame_object(collection,'Ember trail '+layer['name']+' '+str(index+1),points,index+1,tail,True)
     text=bpy.data.texts.new('Ember Original Project.json');text.write(json.dumps(data['project'],indent=2));scene['ember_bake']=True;scene['ember_units']='meters';scene.frame_set(min(2,scene.frame_end));bpy.ops.wm.save_as_mainfile(filepath=job['output'])
 
 def load_file(filename):

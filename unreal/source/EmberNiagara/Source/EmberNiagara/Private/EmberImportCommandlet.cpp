@@ -157,9 +157,10 @@ int32 UEmberImportCommandlet::Main(const FString& Params) {
     if(FParse::Param(*Params,TEXT("VerifyDynamics"))&&!VerifyDynamics(Asset))return 1;
     if(FParse::Param(*Params,TEXT("VerifyAuthoring"))&&!VerifyAuthoring(Asset))return 1;
     if(FParse::Param(*Params,TEXT("VerifyObstacles"))&&!VerifyObstacles(Asset))return 1;
-    if(FParse::Param(*Params,TEXT("VerifyAnime"))||FParse::Param(*Params,TEXT("VerifyAuthoring"))){
+    if(FParse::Param(*Params,TEXT("VerifyStrips"))||FParse::Param(*Params,TEXT("VerifyAnime"))||FParse::Param(*Params,TEXT("VerifyAuthoring"))){
         auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);TArray<UMaterial*> Materials;
         for(const auto& Handle:System->GetEmitterHandles())for(auto* Renderer:Handle.GetEmitterData()->GetRenderers()){
+            if(FParse::Param(*Params,TEXT("VerifyStrips"))){const auto* Sprite=Cast<UNiagaraSpriteRendererProperties>(Renderer);if(!Cast<UNiagaraRibbonRendererProperties>(Renderer)&&(!Sprite||Sprite->PositionBinding.GetParamMapBindableVariable().GetName()!=FName(TEXT("Particles.EmberTrailPosition"))))continue;}
             UMaterial* Material=nullptr;if(auto* Ribbon=Cast<UNiagaraRibbonRendererProperties>(Renderer))Material=Cast<UMaterial>(Ribbon->Material);if(auto* Sprite=Cast<UNiagaraSpriteRendererProperties>(Renderer))Material=Cast<UMaterial>(Sprite->Material);if(auto* Mesh=Cast<UNiagaraMeshRendererProperties>(Renderer))if(!Mesh->OverrideMaterials.IsEmpty())Material=Cast<UMaterial>(Mesh->OverrideMaterials[0].ExplicitMat);
             if(!Material||Material->BlendMode!=BLEND_Translucent||(!FParse::Param(*Params,TEXT("VerifyAuthoring"))&&!Cast<UMaterialExpressionCustom>(Material->GetEditorOnlyData()->EmissiveColor.Expression)))return 1;
             Material->ForceRecompileForRendering();Materials.AddUnique(Material);
@@ -172,7 +173,7 @@ int32 UEmberImportCommandlet::Main(const FString& Params) {
         auto* Resource=Material->GetMaterialResource(ERHIFeatureLevel::SM5);
 #endif
         if(Resource)Resource->FinishCompilation();if(!Resource||!Resource->GetCompileErrors().IsEmpty()||!Resource->HasValidGameThreadShaderMap()){UE_LOG(LogTemp,Error,TEXT("EMBER_ANIME_SHADER_INVALID %s resource=%d"),*Material->GetName(),Resource!=nullptr);if(Resource)for(const auto& Message:Resource->GetCompileErrors())UE_LOG(LogTemp,Error,TEXT("EMBER_ANIME_SHADER_ERROR %s"),*Message);return 1;}}
-        if(Materials.Num()<(FParse::Param(*Params,TEXT("VerifyAuthoring"))?3:5))return 1;UE_LOG(LogTemp,Display,TEXT("EMBER_ANIME_SHADER_SUCCESS %d"),Materials.Num());
+        if(Materials.Num()<(FParse::Param(*Params,TEXT("VerifyStrips"))?2:FParse::Param(*Params,TEXT("VerifyAuthoring"))?3:5))return 1;UE_LOG(LogTemp,Display,TEXT("EMBER_ANIME_SHADER_SUCCESS %d"),Materials.Num());
     }
     if(FParse::Param(*Params,TEXT("VerifyWorkspaceFixture"))){
         auto* System=LoadObject<UNiagaraSystem>(nullptr,*Asset);auto& Store=System->GetExposedParameters();
