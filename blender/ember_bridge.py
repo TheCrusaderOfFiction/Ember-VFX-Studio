@@ -13,12 +13,12 @@ def material(name, glow, effect=None):
     out=nodes.new('ShaderNodeOutputMaterial');shader=nodes.new('ShaderNodeBsdfPrincipled');color=nodes.new('ShaderNodeAttribute');color.attribute_name='ember_color'
     source=color.outputs['Color']
     if effect and effect.get('anime',False):
-        links=mat.node_tree.links;steps=effect.get('animeSteps',3);outline=effect.get('animeOutline',8)/100
+        links=mat.node_tree.links;steps=effect.get('animeSteps',3);outline=effect.get('animeOutline',8)/100;brightness=3 if glow else 1
         facing=nodes.new('ShaderNodeLayerWeight');facing.inputs['Blend'].default_value=.5
         inverse=nodes.new('ShaderNodeMath');inverse.operation='SUBTRACT';inverse.inputs[0].default_value=1;links.new(facing.outputs['Facing'],inverse.inputs[1])
         multiply=nodes.new('ShaderNodeMath');multiply.operation='MULTIPLY';multiply.inputs[1].default_value=steps;links.new(inverse.outputs[0],multiply.inputs[0])
         floor=nodes.new('ShaderNodeMath');floor.operation='FLOOR';links.new(multiply.outputs[0],floor.inputs[0])
-        scale=nodes.new('ShaderNodeMath');scale.operation='MULTIPLY_ADD';scale.inputs[1].default_value=.65/(steps-1);scale.inputs[2].default_value=.35;links.new(floor.outputs[0],scale.inputs[0])
+        scale=nodes.new('ShaderNodeMath');scale.operation='MULTIPLY_ADD';scale.inputs[1].default_value=.65*brightness/(steps-1);scale.inputs[2].default_value=.35*brightness;links.new(floor.outputs[0],scale.inputs[0])
         shade=nodes.new('ShaderNodeMixRGB');shade.blend_type='MULTIPLY';shade.inputs[0].default_value=1;links.new(source,shade.inputs[1]);links.new(scale.outputs[0],shade.inputs[2])
         rim=nodes.new('ShaderNodeMath');rim.operation='LESS_THAN';rim.inputs[1].default_value=outline;links.new(inverse.outputs[0],rim.inputs[0])
         ink=nodes.new('ShaderNodeMixRGB');ink.inputs[2].default_value=(.008,.01,.018,1);links.new(rim.outputs[0],ink.inputs[0]);links.new(shade.outputs[0],ink.inputs[1]);source=ink.outputs[0]

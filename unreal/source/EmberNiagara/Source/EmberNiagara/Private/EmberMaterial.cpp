@@ -28,6 +28,7 @@ UMaterial* EmberCreateSpriteMaterial(UNiagaraSystem* System,const FString& Layer
   if(Shape==TEXT("mesh")){auto* Normal=NewObject<UMaterialExpressionVertexNormalWS>(Material);auto* View=NewObject<UMaterialExpressionCameraVectorWS>(Material);Expressions.AddExpression(Normal);Expressions.AddExpression(View);for(const auto& Pair:TArray<TPair<FString,UMaterialExpression*>>{{TEXT("Normal"),Normal},{TEXT("View"),View}}){FCustomInput I;I.InputName=FName(*Pair.Key);I.Input.Expression=Pair.Value;Toon->Inputs.Add(I);}Toon->Code=FString::Printf(TEXT("float f=abs(dot(normalize(Normal),normalize(View)));float shade=.35+.65*floor(min(f,.9999)*%d.0)/%d.0;return lerp(Tint*shade,float3(.008,.01,.018),1.0-step(%.4f,f));"),Steps,Steps-1,Outline);}
   else if(Shape==TEXT("trail"))Toon->Code=TEXT("return Tint;");
   else Toon->Code=Distance+FString::Printf(TEXT("float shade=.35+.65*floor(clamp(1.0-r,0.0,.9999)*%d.0)/%d.0;float ink=step(%.4f,r);"),Steps,Steps-1,1-Outline)+(Shape==TEXT("ring")?FString::Printf(TEXT("ink=max(ink,1.0-step(%.4f,r));"),.55+Outline):TEXT(""))+TEXT("return lerp(Tint*shade,float3(.008,.01,.018),ink);");
+  if(Glow){Toon->Code.ReplaceInline(TEXT("Tint*shade"),TEXT("Tint*shade*3.0"));if(Shape==TEXT("trail"))Toon->Code=TEXT("return Tint*3.0;");}
   Expressions.AddExpression(Toon);Material->GetEditorOnlyData()->EmissiveColor.Expression=Toon;
  }
  Material->GetEditorOnlyData()->Opacity.Expression=Opacity;Material->PostEditChange();FAssetRegistryModule::AssetCreated(Material);Material->MarkPackageDirty();
