@@ -1,4 +1,4 @@
-# Ember VFX Studio — current desktop release (1.15.1)
+# Ember VFX Studio — current desktop release (1.16)
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
 
@@ -22,6 +22,14 @@ New, Open, Undo, and Redo are in the toolbar. Restart resets all layer simulatio
 ## Anime filter
 
 Enable **Anime filter** under Look & feel on any particle layer. Adjust **Shading steps** (2–6) and **Ink outline** (0–25%). Use **Apply this look to all layers** to style the whole effect. Sprites use crisp silhouettes and cel shading; imported meshes use stepped view-based shading with dark rims. Glow brightens anime shading and trails while keeping ink edges readable. Turn Glow off for a flatter look. Unreal scene bloom controls the exported halo. Settings persist in projects and presets, and generated Niagara and Blender materials include the style. Blender shades mesh geometry, so it is an approximation of the sprite preview. This does not apply a screen filter to existing native Niagara systems or an Unreal scene.
+
+## Forces, collisions and lifetime
+
+Use **Forces, collisions & lifetime** to combine wind, drag, attraction, swirl, and lift. Place the shared force center with X/Y/Z. Animate forces through **Change a property**. Recipe buttons add tornado, black hole, drifting smoke, or ricochet sparks layers without replacing the current effect.
+
+Enable **Collide with a surface** for a movable horizontal plane. Choose Bounce or Remove particle, adjust its height, bounciness, and surface friction. Set continuous particle spin and a final lifetime color. All these controls work in the 3D preview, generated Niagara systems, saved projects/presets, and Blender bakes. Locked ring motion ignores forces and collisions. The collision plane is local to the effect and does not sample Unreal scene geometry.
+
+This expands direct authoring; full standalone Niagara parity, GPU simulation, arbitrary graphs, skeletal sampling and arbitrary scene collisions remain outside Ember's particle builder. Native project systems retain their advanced features in Unreal.
 
 ## Longer trails
 

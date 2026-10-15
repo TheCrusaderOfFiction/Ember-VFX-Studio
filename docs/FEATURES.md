@@ -2,6 +2,30 @@
 
 Available inside the app through Documentation, F1, and the ? buttons beside controls.
 
+## Wind, drag, attraction and swirl
+
+Dynamics
+
+Open Forces, collisions & lifetime. Wind X/Y/Z adds acceleration in centimeters per second squared. Air resistance slows velocity exponentially per second. Positive Pull / push attracts particles to Force center; negative pushes away. Swirl force adds tangential acceleration around the vertical axis through Force center; its sign reverses direction. Swirl lift adds vertical acceleration. These forces combine with aimed or preset movement, gravity and turbulence. Locked ring motion ignores forces and collisions. Force values can be animated through Change a property. Recipe buttons add independent layers and preserve your current effect.
+
+Try this: Add tornado, then increase Air resistance to make the swirl settle.
+
+## Collision surface
+
+Dynamics
+
+Enable Collide with a surface, then choose Bounce or Remove particle in Forces, collisions & lifetime. Collision floor height places a horizontal plane in effect-local centimeters. Bounciness controls retained vertical speed (0 to 1). Surface friction reduces sideways speed per impact (0 to 1). Remove particle deletes a particle when it crosses below the plane. Locked ring movement ignores collisions. These settings export to Niagara and baked Blender animation. This surface is not arbitrary Unreal scene geometry.
+
+Try this: Use high bounciness and low friction for ricochet sparks.
+
+## Particle spin and color over lifetime
+
+Dynamics
+
+Particle spin rotates each sprite or mesh continuously in degrees per second; negative spins in reverse. Spin is independent of the direction particles travel and can be animated. Enable Color over lifetime and choose Fade toward to blend from the layer color to a final color based on each particle’s own age. Layer color animation still works, and the result blends in linear color space. Projects, presets, Niagara export and Blender baking preserve these controls.
+
+Try this: Fade hot yellow sparks toward red while spinning them at 180 degrees per second.
+
 ## Anime filter
 
 Appearance
