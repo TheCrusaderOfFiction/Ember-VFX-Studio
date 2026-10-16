@@ -2,6 +2,14 @@
 
 Available inside the app through Documentation, F1, and the ? buttons beside controls.
 
+## Small mesh creator
+
+Appearance
+
+Open Shape & motion → Create a mesh. Choose Sphere, Cube, Cone, Cylinder, Ring, Crystal or Plane. Width, Height and Depth stretch the shape; Taper narrows its top and Twist turns the geometry along its height. Detail controls roundness. Drag the preview to orbit and scroll to zoom; Wireframe shows its triangles. Save mesh as GLB writes a reusable mesh without Blender. Use on active layer converts and caches the mesh using your installed Blender, then assigns it to that layer only. The particle layer supplies color, glow, size and animation; preview shading is only for inspecting geometry. Saved projects and presets retain a mesh reference, so keep the cached mesh on this Windows PC or export a GLB and import it on another PC. Mac/Linux/mobile can save a GLB but direct mesh-particle assignment is Windows-only.
+
+Try this: Choose Cone, increase Height, set Taper to 0.5 and Twist to 90 degrees for a curved shard.
+
 ## Mesh emission, scene collisions and attachments
 
 Unreal integration

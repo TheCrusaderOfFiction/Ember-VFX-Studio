@@ -3,3 +3,5 @@ export {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
 export {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 export {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
+
+export {GLTFExporter} from 'three/addons/exporters/GLTFExporter.js';
