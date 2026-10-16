@@ -2,6 +2,10 @@
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
 
+## Android app
+
+[Download Ember for Android (.apk)](https://github.com/TheCrusaderOfFiction/Ember-VFX-Studio/releases/download/android-v1.22.0/Ember-Android.apk). Open the download on your phone to install it. The offline app includes the particle editor, touch preview, presets, animation and project/image saving. Save an Ember project and move it to your PC for Niagara or Blender export. See [Android installation and build instructions](android/README.md).
+
 ## Keep animated properties on events
 
 - Timed **Add particles** events have **Keep animated properties** enabled by default. Turn it off for a burst that uses the layer’s base settings while other particles continue following its timeline. Lifetime curves still apply.
