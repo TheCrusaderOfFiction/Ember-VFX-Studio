@@ -13,9 +13,6 @@ jobs:
           - arch: arm64
             runner: macos-15
             angle: ""
-          - arch: x64
-            runner: macos-15
-            angle: ""
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 25
     steps:
@@ -29,9 +26,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run check
       - run: node scripts/package-macos.cjs --arch=${{ matrix.arch }}
-      - name: Install Rosetta for Intel app verification
-        if: matrix.arch == 'x64'
-        run: sudo softwareupdate --install-rosetta --agree-to-license
       - run: node scripts/verify-macos-ui.cjs --arch=${{ matrix.arch }}
         env:
           EMBER_MAC_QA_ANGLE: ${{ matrix.angle }}
@@ -103,7 +97,7 @@ jobs:
           mkdir -p .openai
           cat > .openai/apple-release-notes.md <<'NOTES'
           ## Mac
-          Download the Apple Silicon ZIP for M-series Macs, or the Intel ZIP for Intel Macs. Unzip it and move Ember.app to Applications.
+          Download the Apple Silicon ZIP for M-series Macs. Unzip it and move Ember.app to Applications. Intel Mac users can use the browser editor at https://thecrusaderoffiction.github.io/Ember-VFX-Studio/ while native Intel graphics verification remains unresolved.
 
           These first Mac builds are ad-hoc signed, not Apple-notarized. macOS may require approval in System Settings → Privacy & Security → Open Anyway. Only approve the app if you trust this source. https://support.apple.com/102445
 
@@ -112,6 +106,6 @@ jobs:
 
           Both versions include the particle editor, presets, layers, animation, anime/glow controls and editable project saving. Move projects to Ember on Windows for native Niagara or Blender export. Desktop mesh files remain on the Windows PC.
 
-          SHA-256 checksums accompany both Mac ZIPs. Source and build/install instructions are in the apple folder.
+          A SHA-256 checksum accompanies the Mac ZIP. Source and build/install instructions are in the apple folder.
           NOTES
           gh release create "$tag" release-apple/*.zip release-apple/*.sha256 --target "$GITHUB_SHA" --title "Ember for Apple $version" --notes-file .openai/apple-release-notes.md --latest=false
