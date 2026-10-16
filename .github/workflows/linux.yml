@@ -17,6 +17,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run check
       - run: node scripts/package-linux.cjs
+      - name: Install Linux package with sandbox permissions
+        run: sudo apt-get install -y ./release-linux/Ember-Linux-x64.deb
       - name: Verify actual Linux editor
         run: xvfb-run -a node scripts/verify-linux-ui.cjs
       - uses: actions/upload-artifact@v4
@@ -28,4 +30,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload desktop-v1.22.0 release-linux/*.tar.gz release-linux/*.sha256 --clobber
+          gh release upload desktop-v1.22.0 release-linux/*.deb release-linux/*.tar.gz release-linux/*.sha256 --clobber

@@ -2,7 +2,7 @@
 
 Windows: download and extract Ember-Windows-x64.zip, then run Ember.exe inside it. Includes the Unreal 5.6/5.8 and Blender tools. This unsigned app may show a Windows publisher warning.
 
-Linux x64: download and extract Ember-Linux-x64.tar.gz, then run Ember inside the extracted folder. Requires a desktop Linux distribution with Electron runtime dependencies. Native Unreal and Blender integration remains Windows-only.
+Linux x64 (Ubuntu 24.04 or compatible): install Ember-Linux-x64.deb with your package installer, or `sudo apt install ./Ember-Linux-x64.deb`. This installs dependencies, the application-menu entry and secure sandbox permissions. A tar.gz archive is also available for other distributions with suitable Electron dependencies and sandbox configuration. Native Unreal and Blender integration remains Windows-only.
 
 Mac M-series: extract Ember-Mac-AppleSilicon.zip and move Ember.app to Applications. This build is not Apple-notarized.
 
