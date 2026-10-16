@@ -69,7 +69,7 @@ public final class MainActivity extends Activity {
         String action=req.getString("action");Intent intent;
         if(action.equals("open")){intent=new Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*");}
         else if(action.equals("save")){
-          String type=req.getString("mime");if(!type.equals("application/json")&&!type.equals("image/png"))throw new IOException("Unsupported file type");
+          String type=req.getString("mime");if(!type.equals("application/json")&&!type.equals("image/png")&&!type.equals("model/gltf-binary"))throw new IOException("Unsupported file type");
           pendingBytes=Base64.decode(req.getString("base64"),Base64.DEFAULT);if(pendingBytes.length>LIMIT)throw new IOException("File is too large");
           String name=req.optString("name","effect.ember.json").replaceAll("[^A-Za-z0-9._ -]","-");if(name.length()>120)name=name.substring(0,120);
           intent=new Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType(type).putExtra(Intent.EXTRA_TITLE,name);
