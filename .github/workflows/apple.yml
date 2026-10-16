@@ -14,8 +14,8 @@ jobs:
             runner: macos-15
             angle: ""
           - arch: x64
-            runner: macos-15-intel
-            angle: gl
+            runner: macos-15
+            angle: ""
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 25
     steps:
@@ -29,6 +29,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run check
       - run: node scripts/package-macos.cjs --arch=${{ matrix.arch }}
+      - name: Install Rosetta for Intel app verification
+        if: matrix.arch == 'x64'
+        run: sudo softwareupdate --install-rosetta --agree-to-license
       - run: node scripts/verify-macos-ui.cjs --arch=${{ matrix.arch }}
         env:
           EMBER_MAC_QA_ANGLE: ${{ matrix.angle }}
