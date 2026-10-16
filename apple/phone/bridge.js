@@ -11,7 +11,7 @@
     input.click();return;
    }
    if(action!=='save')throw Error('Unsupported file action');
-   if(!['application/json','image/png'].includes(request.mime))throw Error('Unsupported file type');
+   if(!['application/json','image/png','model/gltf-binary'].includes(request.mime))throw Error('Unsupported file type');
    const binary=atob(request.base64);if(binary.length>16*1024*1024)throw Error('File is too large');const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));const file=new File([bytes],request.name,{type:request.mime});
    let shared=false;if(navigator.canShare?.({files:[file]})&&navigator.share){try{await navigator.share({files:[file],title:request.name});shared=true;}catch(e){if(e.name==='AbortError')throw e;}}
    if(!shared){const url=URL.createObjectURL(file),link=document.createElement('a');link.href=url;link.download=request.name;link.rel='noopener';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}reply(id,{ok:true});
