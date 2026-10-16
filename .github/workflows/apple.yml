@@ -12,8 +12,10 @@ jobs:
         include:
           - arch: arm64
             runner: macos-15
+            angle: ""
           - arch: x64
-            runner: macos-15
+            runner: macos-15-intel
+            angle: gl
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 25
     steps:
@@ -28,6 +30,8 @@ jobs:
       - run: pnpm run check
       - run: node scripts/package-macos.cjs --arch=${{ matrix.arch }}
       - run: node scripts/verify-macos-ui.cjs --arch=${{ matrix.arch }}
+        env:
+          EMBER_MAC_QA_ANGLE: ${{ matrix.angle }}
       - uses: actions/upload-artifact@v4
         with:
           name: mac-app-${{ matrix.arch }}
