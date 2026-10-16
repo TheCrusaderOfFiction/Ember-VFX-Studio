@@ -9,7 +9,9 @@
     "build:3d": "node scripts/build-3d.cjs",
     "build:docs": "node scripts/build-docs.cjs",
     "push": "git push origin main",
-    "build:android": "node scripts/build-android.cjs"
+    "build:android": "node scripts/build-android.cjs",
+    "build:apple-web": "node scripts/build-apple-web.cjs",
+    "package:mac": "node scripts/package-macos.cjs"
   },
   "devDependencies": {
     "@electron/packager": "^20.3.0",

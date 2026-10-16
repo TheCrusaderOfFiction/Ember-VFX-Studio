@@ -2,6 +2,10 @@
 
 Open **release-v1.2/Ember-win32-x64/Ember.exe**.
 
+## Apple apps
+
+[Install on iPhone/iPad](https://thecrusaderoffiction.github.io/Ember-VFX-Studio/) from Safari using Add to Home Screen, or download [Apple Silicon Mac](https://github.com/TheCrusaderOfFiction/Ember-VFX-Studio/releases/download/apple-v1.22.0/Ember-Mac-AppleSilicon.zip) / [Intel Mac](https://github.com/TheCrusaderOfFiction/Ember-VFX-Studio/releases/download/apple-v1.22.0/Ember-Mac-Intel.zip). The iPhone/iPad version is an offline Home Screen web app; the Mac ZIPs contain desktop apps. See [Apple installation and build instructions](apple/README.md) for signing status and platform limits.
+
 ## Android app
 
 [Download Ember for Android (.apk)](https://github.com/TheCrusaderOfFiction/Ember-VFX-Studio/releases/download/android-v1.22.0/Ember-Android.apk). Open the download on your phone to install it. The offline app includes the particle editor, touch preview, presets, animation and project/image saving. Save an Ember project and move it to your PC for Niagara or Blender export. See [Android installation and build instructions](android/README.md).

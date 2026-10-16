@@ -1,0 +1,110 @@
+name: Apple apps
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mac:
+    name: Mac ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: macos-15
+          - arch: x64
+            runner: macos-15-intel
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run check
+      - run: node scripts/package-macos.cjs
+      - run: node scripts/verify-macos-ui.cjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac-app-${{ matrix.arch }}
+          path: |
+            release-macos/*.zip
+            release-macos/*.sha256
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mac-qa-${{ matrix.arch }}
+          path: .openai/verification/mac/
+  phone:
+    name: iPhone and iPad Home Screen app
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node scripts/build-apple-web.cjs
+      - name: Install WebKit QA browser
+        run: |
+          mkdir -p .openai/apple-qa
+          npm install --prefix .openai/apple-qa --no-audit --no-fund playwright
+          node .openai/apple-qa/node_modules/playwright/cli.js install webkit
+      - run: node scripts/verify-apple-web.cjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: release-apple-web
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: apple-web-qa
+          path: .openai/verification/apple-web/
+  pages:
+    needs: phone
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
+  release:
+    needs: [mac, pages]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: mac-app-*
+          path: release-apple
+          merge-multiple: true
+      - name: Publish Apple downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(node -p "require('./package.json').version")
+          tag="apple-v$version"
+          mkdir -p .openai
+          cat > .openai/apple-release-notes.md <<'NOTES'
+          ## Mac
+          Download the Apple Silicon ZIP for M-series Macs, or the Intel ZIP for Intel Macs. Unzip it and move Ember.app to Applications.
+
+          These first Mac builds are ad-hoc signed, not Apple-notarized. macOS may require approval in System Settings → Privacy & Security → Open Anyway. Only approve the app if you trust this source. https://support.apple.com/102445
+
+          ## iPhone and iPad
+          Open https://thecrusaderoffiction.github.io/Ember-VFX-Studio/ in Safari, then Share → Add to Home Screen. Keep Open as Web App enabled if shown. Let the first load finish online before using it offline. No Apple Developer account is needed for this Home Screen version; it is not a native App Store/TestFlight download.
+
+          Both versions include the particle editor, presets, layers, animation, anime/glow controls and editable project saving. Move projects to Ember on Windows for native Niagara or Blender export. Desktop mesh files remain on the Windows PC.
+
+          SHA-256 checksums accompany both Mac ZIPs. Source and build/install instructions are in the apple folder.
+          NOTES
+          gh release create "$tag" release-apple/*.zip release-apple/*.sha256 --target "$GITHUB_SHA" --title "Ember for Apple $version" --notes-file .openai/apple-release-notes.md --latest=false

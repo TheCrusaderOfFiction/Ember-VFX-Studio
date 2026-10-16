@@ -1,0 +1,8 @@
+const fs=require('fs'),path=require('path'),zlib=require('zlib');
+const points=[[54,17],[60,40],[80,28],[68,49],[91,54],[68,60],[80,80],[60,68],[54,91],[48,68],[28,80],[40,60],[17,54],[40,48],[28,28],[48,40]],core=[[54,39],[58,50],[69,54],[58,58],[54,69],[50,58],[39,54],[50,50]];
+function inside(x,y,poly){let hit=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++)if((poly[i][1]>y)!==(poly[j][1]>y)&&x<(poly[j][0]-poly[i][0])*(y-poly[i][1])/(poly[j][1]-poly[i][1])+poly[i][0])hit=!hit;return hit;}
+function crc(data){let value=0xffffffff;for(const b of data){value^=b;for(let i=0;i<8;i++)value=(value>>>1)^((value&1)?0xedb88320:0);}return (value^0xffffffff)>>>0;}
+function chunk(name,data){const type=Buffer.from(name),head=Buffer.alloc(4),tail=Buffer.alloc(4);head.writeUInt32BE(data.length);tail.writeUInt32BE(crc(Buffer.concat([type,data])));return Buffer.concat([head,type,data,tail]);}
+function icon(size){const raw=Buffer.alloc(size*(size*4+1));for(let y=0;y<size;y++)for(let x=0;x<size;x++){const px=(x+.5)*108/size,py=(y+.5)*108/size,color=inside(px,py,core)?[255,240,205]:inside(px,py,points)?[182,160,255]:[33,26,49],offset=y*(size*4+1)+1+x*4;raw.set([...color,255],offset);}const header=Buffer.alloc(13);header.writeUInt32BE(size);header.writeUInt32BE(size,4);header[8]=8;header[9]=6;return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',header),chunk('IDAT',zlib.deflateSync(raw)),chunk('IEND',Buffer.alloc(0))]);}
+function writeIconset(dir){fs.mkdirSync(dir,{recursive:true});for(const size of [16,32,128,256,512])for(const scale of [1,2])fs.writeFileSync(path.join(dir,`icon_${size}x${size}${scale===2?'@2x':''}.png`),icon(size*scale));}
+module.exports={icon,writeIconset};
