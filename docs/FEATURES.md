@@ -2,6 +2,14 @@
 
 Available inside the app through Documentation, F1, and the ? buttons beside controls.
 
+## Zigzag lightning bolts
+
+Appearance
+
+Under Shape & motion, set Render particles as to Lightning bolt. Spread becomes Zigzags, controlling 2–32 bends. Maximum left/right distance uses Distance from center as a distance in centimeters, not a percentage, and bounds the main bolt and all branches around its forward axis. Choose 0–8 branches. Starting position anchors the bolt; velocity heading and elevation aim it. Speed controls forward growth, and lifetime determines maximum reach. Zigzags are fixed per birth and do not jitter every frame. Enable Collide with a surface to clip against the configured plane, sphere or box. The main tip stops at the first hit and the visible bolt remains until its lifetime ends; branches stop at their own hits. No bounce is applied to bolts. Color, size, lifetime opacity, glow strength and anime styling affect bolts. Set Distance to zero for a straight beam. Ember previews at most 196,608 bolt vertices per frame. Native Niagara/Blender bolt export is not available yet; save an Ember project to retain editable bolts.
+
+Try this: Try Burst, low Amount, 12 bends, Distance 30 cm, 3 branches and blue-white Glow.
+
 ## Small mesh creator
 
 Appearance
