@@ -30,4 +30,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload desktop-v1.22.0 release-linux/*.deb release-linux/*.tar.gz release-linux/*.sha256 --clobber
+          gh release create desktop-v1.22.1 --title 'Ember desktop 1.22.1' --notes 'Mesh creator update. Linux: install the DEB on Ubuntu 24.04 or compatible. Native Niagara and Blender conversion require Windows.' --latest=false
+          gh release upload desktop-v1.22.1 release-linux/*.deb release-linux/*.tar.gz release-linux/*.sha256 --clobber

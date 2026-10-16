@@ -10,7 +10,7 @@ Use **Save project** or **Share / export** to save/share an editable `.ember.jso
 
 ## Mac
 
-- [Apple Silicon / M-series Mac download](https://github.com/TheCrusaderOfFiction/Ember-VFX-Studio/releases/download/apple-v1.22.0/Ember-Mac-AppleSilicon.zip)
+- [Apple Silicon / M-series Mac download](https://github.com/TheCrusaderOfFiction/Ember-VFX-Studio/releases/download/apple-v1.22.1/Ember-Mac-AppleSilicon.zip)
 - Intel Macs: use the [browser editor](https://thecrusaderoffiction.github.io/Ember-VFX-Studio/). Native Intel packages are not published yet because their 3D startup verification remains unresolved.
 
 Unzip the download and move **Ember.app** to Applications. These builds use ad-hoc signatures and are not notarized by Apple. If macOS blocks the first launch, its **System Settings → Privacy & Security → Open Anyway** flow can approve a downloaded app that you trust. Follow [Apple’s guidance](https://support.apple.com/102445); no global security setting needs to be disabled.
