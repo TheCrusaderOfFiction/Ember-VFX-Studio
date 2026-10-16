@@ -17,3 +17,8 @@ Saves/
 .openai/
 Ember/
 unreal/build*.json
+
+Downloaders/*.zip
+Downloaders/*.apk
+Downloaders/*.gz
+Downloaders/*.sha256

@@ -1,0 +1,31 @@
+name: Linux app
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run check
+      - run: node scripts/package-linux.cjs
+      - name: Verify actual Linux editor
+        run: xvfb-run -a node scripts/verify-linux-ui.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linux-qa
+          path: .openai/verification/mac/
+      - name: Publish Linux archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload desktop-v1.22.0 release-linux/*.tar.gz release-linux/*.sha256 --clobber
