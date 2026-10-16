@@ -11,3 +11,5 @@ Android: open Ember-Android.apk on your phone and allow installation from this s
 iPhone/iPad: open https://thecrusaderoffiction.github.io/Ember-VFX-Studio/ in Safari, then Share → Add to Home Screen. This is an offline Home Screen web app, not an App Store download.
 
 Save an Ember project to move editable effects between platforms. Binary downloads are excluded from Git source control; source links and instructions are tracked here.
+
+Created meshes apply directly on every platform and are embedded in saved effects/presets. Blender is only needed for native Blender/Unreal export conversion on Windows, not for particle editing.

@@ -21,12 +21,12 @@
  for(const child of [...advanced.children]){if(child.tagName==='H3'&&child.textContent==='Selected layer in Unreal')desktopOnly=true;if(desktopOnly)child.hidden=true;}
  advanced.querySelector('summary').textContent='Whole effect controls';
  const sceneNote=document.createElement('p');sceneNote.className='animation-intro';sceneNote.textContent='Unreal scene bindings are kept in your project. Edit them in Ember on your PC.';advanced.append(sceneNote);
- $('#particle-renderer').closest('label').hidden=true;
+ 
  const nav=document.createElement('nav');nav.className='mobile-tabs';nav.setAttribute('aria-label','Ember panels');
  for(const [id,label]of [['presets','Presets & layers'],['preview','Preview'],['controls','Controls']]){const button=document.createElement('button');button.textContent=label;button.dataset.mobilePanel=id;button.onclick=()=>show(id);nav.append(button);}document.body.append(nav);
  function show(panel){current=panel;document.body.dataset.mobilePanel=panel;for(const button of nav.children)button.setAttribute('aria-pressed',String(button.dataset.mobilePanel===panel));requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));}
  $('.brand').onclick=event=>{event.preventDefault();show('preview');viewport?.home();};
- const previousLoad=emberLoadProject;emberLoadProject=function(...args){const result=previousLoad(...args);if(layers.some(l=>l.effect.renderer==='mesh'))toast('Mesh files stay on the PC; sprite and ribbon layers preview here.');return result;};
+ const previousLoad=emberLoadProject;emberLoadProject=function(...args){const result=previousLoad(...args);if(layers.some(l=>l.effect.renderer==='mesh'&&!l.effect.meshData))toast('Mesh files stay on the PC; sprite and ribbon layers preview here.');return result;};
  window.emberMobilePause=()=>{try{persist();}catch{}resumePlaying=playing;if(playing){playing=false;$('#play').textContent='▶';$('#play').setAttribute('aria-label','Play preview');}};
  window.emberMobileResume=()=>{if(resumePlaying){playing=true;$('#play').textContent='Ⅱ';$('#play').setAttribute('aria-label','Pause preview');resumePlaying=false;}};
  window.emberMobileBack=()=>{if($('#dialog').open){$('#dialog').close();return true;}if(current!=='preview'){show('preview');return true;}return false;};
